@@ -12,15 +12,17 @@ header h1 { font-size: 22px; color: #fff; letter-spacing: 2px; flex: 1; }
 header .subtitle { font-size: 11px; color: #667; }
 .search-bar { display: flex; gap: 8px; align-items: center; }
 .search-bar select { background: #1a1a2e; color: #aaa; border: 1px solid #00d4aa55; border-radius: 6px; padding: 7px 10px; font-size: 12px; cursor: pointer; }
-.search-bar input { background: #0f0f1a; color: #fff; border: 1px solid #00d4aa55; border-radius: 6px; padding: 7px 12px; font-size: 13px; width: 200px; outline: none; }
+.search-bar input { background: #0f0f1a; color: #fff; border: 1px solid #00d4aa55; border-radius: 6px; padding: 7px 12px; font-size: 13px; width: 180px; outline: none; }
 .search-bar input:focus { border-color: #00d4aa; }
 .search-bar button { background: #00d4aa; color: #003d2b; border: none; border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-weight: bold; }
 .search-bar button:hover { background: #00ffcc; }
-.controls { padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: #13132a; border-bottom: 1px solid #1e1e3a; position: sticky; top: 0; z-index: 100; }
+.controls { padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #13132a; border-bottom: 1px solid #1e1e3a; position: sticky; top: 0; z-index: 100; }
 .controls label { color: #888; font-size: 13px; }
 select { background: #1a1a2e; color: #fff; border: 1px solid #00d4aa55; border-radius: 8px; padding: 7px 14px; font-size: 14px; cursor: pointer; }
 select:focus { outline: none; border-color: #00d4aa; }
 .date-tag { margin-left: auto; background: #00d4aa15; color: #00d4aa; border: 1px solid #00d4aa33; border-radius: 20px; padding: 4px 14px; font-size: 12px; }
+.day-select { background: #1a1a2e; color: #00d4aa; border: 1px solid #00d4aa55; border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+.day-select:focus { outline: none; border-color: #00d4aa; }
 .loading { text-align: center; padding: 80px 20px; color: #00d4aa; }
 .spinner { width: 44px; height: 44px; border: 3px solid #1a1a2e; border-top: 3px solid #00d4aa; border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 16px; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -45,6 +47,7 @@ select:focus { outline: none; border-color: #00d4aa; }
 .app-name { font-size: 12.5px; color: #ccc; flex: 1; padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chart-item.top3 .app-name { color: #fff; font-weight: 500; }
 .ext-icon { font-size: 10px; color: #444; margin-left: 4px; flex-shrink: 0; }
+.no-data { padding: 20px; text-align: center; color: #555; font-size: 13px; }
 .news-section { background: #1a1a2e; border-radius: 12px; border: 1px solid #1e1e3a; overflow: hidden; }
 .news-header { background: linear-gradient(90deg,#0d2a1a,#082010); padding: 12px 16px; font-size: 13px; font-weight: bold; color: #4caf50; border-bottom: 2px solid #2e7d32; }
 .news-item { padding: 12px 16px; border-bottom: 1px solid #0f0f1a; display: flex; gap: 12px; align-items: flex-start; transition: background 0.15s; }
@@ -93,7 +96,7 @@ select:focus { outline: none; border-color: #00d4aa; }
 <header>
   <div>
     <h1>🎮 手遊排行榜</h1>
-    <div class="subtitle">iOS App Store + Google Play · 遊戲類即時排行 · 前25名</div>
+    <div class="subtitle">iOS App Store + Google Play · 遊戲類排行 · 前25名</div>
   </div>
   <div class="search-bar">
     <select id="searchPlatform">
@@ -113,9 +116,15 @@ select:focus { outline: none; border-color: #00d4aa; }
     <option value="[MO] 澳門">🇲🇴 澳門</option>
     <option value="[JP] 日本">🇯🇵 日本</option>
     <option value="[KR] 韓國">🇰🇷 韓國</option>
-    <option value="[US] 美國">🇺🇸 美國</option>
-    <option value="[SG] 新加坡">🇸🇬 新加坡</option>
-    <option value="[MY] 馬來西亞">🇲🇾 馬來西亞</option>
+    <optgroup label="── 下午2點更新 ──">
+      <option value="[US] 美國">🇺🇸 美國</option>
+      <option value="[SG] 新加坡">🇸🇬 新加坡</option>
+      <option value="[MY] 馬來西亞">🇲🇾 馬來西亞</option>
+    </optgroup>
+  </select>
+  <label>📅 日期</label>
+  <select id="daySelect" onchange="switchDay()" class="day-select">
+    <option value="0">今日</option>
   </select>
   <div class="date-tag" id="dateTag">載入中…</div>
 </div>
@@ -129,7 +138,7 @@ select:focus { outline: none; border-color: #00d4aa; }
   <div class="content">
     <div class="charts-grid" id="chartsGrid"></div>
     <div class="news-section">
-      <div class="news-header">📰 今日遊戲新聞</div>
+      <div class="news-header">📰 遊戲新聞</div>
       <div id="newsList"></div>
     </div>
   </div>
@@ -145,31 +154,46 @@ select:focus { outline: none; border-color: #00d4aa; }
 </div>
 
 <script>
-// ★ 把這裡換成你的 GAS 網址
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbxKBRt_hT6vvOjn2d9ZTZqGevmrRbLSJigBvnBST8qbO8nvRLnW9ftYRHPXlnrPYeGe6w/exec';
-
+var daysData = [];
 var allData = null;
 var newsItems = [];
 
-// 載入資料
 window.onload = function() {
   fetch(GAS_URL + '?action=data')
     .then(function(r) { return r.json(); })
     .then(function(result) {
-      allData = result.allData;
-      newsItems = result.newsItems;
-      document.getElementById('dateTag').textContent = '📅 ' + result.today;
+      daysData = result.days || [];
+      var daySelect = document.getElementById('daySelect');
+      daySelect.innerHTML = '';
+      var labels = ['今日', '昨日', '前天'];
+      daysData.forEach(function(day, i) {
+        if (!day) return;
+        var opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = labels[i] + '（' + (day.today || '') + '）';
+        daySelect.appendChild(opt);
+      });
+      switchDay();
       document.getElementById('loading').style.display = 'none';
       document.getElementById('mainContent').style.display = 'block';
-      switchRegion();
-      renderNews();
     })
-    .catch(function(err) {
+    .catch(function() {
       document.getElementById('loading').innerHTML = '<div style="color:#f44336;padding:40px">⚠️ 載入失敗，請重新整理</div>';
     });
 };
 
-// 搜尋
+function switchDay() {
+  var idx = parseInt(document.getElementById('daySelect').value) || 0;
+  var day = daysData[idx];
+  if (!day) return;
+  allData = day.allData;
+  newsItems = day.newsItems || [];
+  document.getElementById('dateTag').textContent = '📅 ' + (day.today || '');
+  switchRegion();
+  renderNews();
+}
+
 function doSearch() {
   var q = document.getElementById('searchInput').value.trim();
   var platform = document.getElementById('searchPlatform').value;
@@ -207,7 +231,7 @@ function openAppModal(platform, appId, appName) {
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.results && data.results.length > 0) showIosAppModal(data.results[0]);
-        else window.open('https://apps.apple.com/app/id' + appId, '_blank'), closeModalDirect();
+        else { window.open('https://apps.apple.com/app/id' + appId, '_blank'); closeModalDirect(); }
       })
       .catch(function() { window.open('https://apps.apple.com/app/id' + appId, '_blank'); closeModalDirect(); });
   } else {
@@ -216,7 +240,7 @@ function openAppModal(platform, appId, appName) {
       .then(function(r) { return r.json(); })
       .then(function(app) {
         if (app && app.name) showGPAppModal(app);
-        else window.open('https://play.google.com/store/apps/details?id=' + appId, '_blank'), closeModalDirect();
+        else { window.open('https://play.google.com/store/apps/details?id=' + appId, '_blank'); closeModalDirect(); }
       })
       .catch(function() { window.open('https://play.google.com/store/apps/details?id=' + appId, '_blank'); closeModalDirect(); });
   }
@@ -291,7 +315,7 @@ function getSourceInfo(url, sourceName) {
     '中時':     { name: '中時新聞',     favicon: 'https://www.chinatimes.com/favicon.ico' },
     '三立':     { name: '三立新聞',     favicon: 'https://www.setn.com/favicon.ico' },
     'TVBS':     { name: 'TVBS',         favicon: 'https://news.tvbs.com.tw/favicon.ico' },
-    'Yahoo':    { name: 'Yahoo',        favicon: 'https://www.yahoo.com/favicon.ico' },
+    'Yahoo':    { name: 'Yahoo',        favicon: 'https://www.yahoo.com/favicon.ico' }
   };
   if (sourceName) {
     var keys = Object.keys(nameMap);
@@ -313,7 +337,7 @@ function getSourceInfo(url, sourceName) {
       'setn.com':       { name: '三立新聞',      favicon: 'https://www.setn.com/favicon.ico' },
       'tvbs.com.tw':    { name: 'TVBS',          favicon: 'https://news.tvbs.com.tw/favicon.ico' },
       'udn.com':        { name: '聯合新聞',      favicon: 'https://udn.com/favicon.ico' },
-      'yahoo.com':      { name: 'Yahoo',         favicon: 'https://www.yahoo.com/favicon.ico' },
+      'yahoo.com':      { name: 'Yahoo',         favicon: 'https://www.yahoo.com/favicon.ico' }
     };
     var urlKeys = Object.keys(urlMap);
     for (var j = 0; j < urlKeys.length; j++) {
@@ -326,33 +350,38 @@ function getSourceInfo(url, sourceName) {
 }
 
 function renderCharts(regionName) {
-  if (!allData || !allData[regionName]) return;
+  var grid = document.getElementById('chartsGrid');
+  if (!allData) { grid.innerHTML = '<div class="no-data">請選擇地區</div>'; return; }
   var data = allData[regionName];
   var medals = ['🥇','🥈','🥉'];
   var charts = [
-    { key: 'iosFree',  label: 'App Store 免費榜', cls: 'ios', badge: 'FREE', platform: 'ios' },
-    { key: 'iosGross', label: 'App Store 收入榜', cls: 'ios', badge: 'TOP$', platform: 'ios' },
-    { key: 'gpFree',   label: 'Google Play 免費榜', cls: 'gp', badge: 'FREE', platform: 'gp' },
-    { key: 'gpGross',  label: 'Google Play 最高收入', cls: 'gp', badge: 'TOP$', platform: 'gp' }
+    { key: 'iosFree',  label: 'App Store 免費榜',    cls: 'ios', badge: 'FREE', platform: 'ios' },
+    { key: 'iosGross', label: 'App Store 收入榜',    cls: 'ios', badge: 'TOP$', platform: 'ios' },
+    { key: 'gpFree',   label: 'Google Play 免費榜',  cls: 'gp',  badge: 'FREE', platform: 'gp' },
+    { key: 'gpGross',  label: 'Google Play 最高收入', cls: 'gp',  badge: 'TOP$', platform: 'gp' }
   ];
-  var grid = document.getElementById('chartsGrid');
   grid.innerHTML = '';
   charts.forEach(function(c) {
-    var games = data[c.key] || [];
+    var games = (data && data[c.key]) ? data[c.key] : [];
     var icon = c.cls === 'ios' ? '📱' : '🤖';
-    var items = games.map(function(g, i) {
-      var rank = i + 1;
-      var rc = rank===1?'r1':rank===2?'r2':rank===3?'r3':'other';
-      var rs = rank<=3 ? medals[i] : rank;
-      var hasLink = g.appId && g.appId.length > 0;
-      var onclick = hasLink ? 'openAppModal("'+c.platform+'","'+esc(g.appId)+'","'+esc(g.name)+'")'  : '';
-      return '<div class="chart-item'+(rank<=3?' top3':'')+'"'+(onclick?' onclick="'+onclick+'"':'')+' style="'+(onclick?'cursor:pointer':'')+'">'
-        + '<div class="rank '+rc+'">'+rs+'</div>'
-        + '<div class="app-name">'+esc(g.name)+'</div>'
-        + (hasLink ? '<span class="ext-icon">›</span>' : '')
-        + '</div>';
-    }).join('');
-    grid.innerHTML += '<div class="chart-card"><div class="chart-header '+c.cls+'">'+icon+' '+c.label+'<span class="badge">'+c.badge+'</span></div><div class="chart-list">'+(items||'<div class="chart-item"><div class="app-name" style="color:#333">暫無資料</div></div>')+'</div></div>';
+    var items = '';
+    if (games.length === 0) {
+      items = '<div class="no-data">暫無資料（下午2點更新）</div>';
+    } else {
+      items = games.map(function(g, i) {
+        var rank = i + 1;
+        var rc = rank===1?'r1':rank===2?'r2':rank===3?'r3':'other';
+        var rs = rank<=3 ? medals[i] : rank;
+        var hasLink = g.appId && g.appId.length > 0;
+        var onclick = hasLink ? "openAppModal('" + c.platform + "','" + g.appId + "','" + g.name.replace(/'/g,'') + "')" : '';
+        return '<div class="chart-item'+(rank<=3?' top3':'')+'"'+(onclick?' onclick="'+onclick+'"':'')+' style="'+(onclick?'cursor:pointer':'')+'">'
+          + '<div class="rank '+rc+'">'+rs+'</div>'
+          + '<div class="app-name">'+esc(g.name)+'</div>'
+          + (hasLink ? '<span class="ext-icon">›</span>' : '')
+          + '</div>';
+      }).join('');
+    }
+    grid.innerHTML += '<div class="chart-card"><div class="chart-header '+c.cls+'">'+icon+' '+c.label+'<span class="badge">'+c.badge+'</span></div><div class="chart-list">'+items+'</div></div>';
   });
 }
 
@@ -373,7 +402,6 @@ function renderNews() {
 }
 
 function switchRegion() { renderCharts(document.getElementById('regionSelect').value); }
-
 function showModalLoading() {
   document.getElementById('modalBody').innerHTML = '<div class="modal-loading"><div class="spinner"></div>載入中...</div>';
   document.getElementById('modalOverlay').classList.add('show');
