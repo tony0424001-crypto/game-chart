@@ -9,70 +9,74 @@
 body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a14; color: #e0e0e0; min-height: 100vh; }
 header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-bottom: 2px solid #00d4aa; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 header h1 { font-size: 22px; color: #fff; letter-spacing: 2px; flex: 1; }
-header .subtitle { font-size: 11px; color: #667; }
+.subtitle { font-size: 11px; color: #667; }
 .search-bar { display: flex; gap: 8px; align-items: center; }
-.search-bar select { background: #1a1a2e; color: #aaa; border: 1px solid #00d4aa55; border-radius: 6px; padding: 7px 10px; font-size: 12px; cursor: pointer; }
+.search-bar select { background: #1a1a2e; color: #aaa; border: 1px solid #00d4aa55; border-radius: 6px; padding: 7px 10px; font-size: 12px; }
 .search-bar input { background: #0f0f1a; color: #fff; border: 1px solid #00d4aa55; border-radius: 6px; padding: 7px 12px; font-size: 13px; width: 180px; outline: none; }
 .search-bar input:focus { border-color: #00d4aa; }
 .search-bar button { background: #00d4aa; color: #003d2b; border: none; border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer; font-weight: bold; }
-.search-bar button:hover { background: #00ffcc; }
 .controls { padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #13132a; border-bottom: 1px solid #1e1e3a; position: sticky; top: 0; z-index: 100; }
 .controls label { color: #888; font-size: 13px; }
 select { background: #1a1a2e; color: #fff; border: 1px solid #00d4aa55; border-radius: 8px; padding: 7px 14px; font-size: 14px; cursor: pointer; }
-select:focus { outline: none; border-color: #00d4aa; }
+.day-select { color: #00d4aa; }
 .date-tag { margin-left: auto; background: #00d4aa15; color: #00d4aa; border: 1px solid #00d4aa33; border-radius: 20px; padding: 4px 14px; font-size: 12px; }
-.day-select { background: #1a1a2e; color: #00d4aa; border: 1px solid #00d4aa55; border-radius: 8px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
-.day-select:focus { outline: none; border-color: #00d4aa; }
 .loading { text-align: center; padding: 80px 20px; color: #00d4aa; }
 .spinner { width: 44px; height: 44px; border: 3px solid #1a1a2e; border-top: 3px solid #00d4aa; border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 16px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .content { padding: 20px; max-width: 1300px; margin: 0 auto; }
+
+/* 分析區塊 */
+.analysis-section { background: #1c1a0e; border: 1px solid #f0c04055; border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; }
+.analysis-title { font-size: 13px; font-weight: bold; color: #f0c040; margin-bottom: 10px; }
+.analysis-chart-label { font-size: 11px; color: #888; margin: 8px 0 4px; font-weight: bold; }
+.analysis-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid #2a2a1a; }
+.analysis-item:last-child { border-bottom: none; }
+.badge-new { background: #28a745; color: #fff; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: bold; flex-shrink: 0; }
+.badge-rise { background: #fd7e14; color: #fff; padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: bold; flex-shrink: 0; }
+.analysis-name { font-size: 12px; color: #e0c060; text-decoration: none; flex: 1; }
+.analysis-name:hover { color: #f0d070; text-decoration: underline; }
+.analysis-rank { font-size: 11px; color: #666; flex-shrink: 0; }
+.no-analysis { font-size: 12px; color: #555; padding: 8px 0; }
+
 .charts-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
 @media (max-width: 1000px) { .charts-grid { grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 560px) { .charts-grid { grid-template-columns: 1fr; } }
-.chart-card { background: #1a1a2e; border-radius: 12px; overflow: hidden; border: 1px solid #1e1e3a; transition: transform 0.2s, box-shadow 0.2s; }
-.chart-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px #00d4aa18; }
+.chart-card { background: #1a1a2e; border-radius: 12px; overflow: hidden; border: 1px solid #1e1e3a; }
 .chart-header { padding: 11px 14px; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
 .chart-header.ios { background: linear-gradient(90deg,#2a2a3e,#1e1e30); color: #aaa; border-bottom: 2px solid #555; }
-.chart-header.gp { background: linear-gradient(90deg,#0d2a1a,#082010); color: #4caf50; border-bottom: 2px solid #2e7d32; }
-.badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: normal; }
+.chart-header.gp  { background: linear-gradient(90deg,#0d2a1a,#082010); color: #4caf50; border-bottom: 2px solid #2e7d32; }
+.badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; }
 .chart-header.ios .badge { background: #33334a; color: #999; }
-.chart-header.gp .badge { background: #1b4a28; color: #81c784; }
+.chart-header.gp  .badge { background: #1b4a28; color: #81c784; }
 .chart-list { padding: 4px 0; }
-.chart-item { display: flex; align-items: center; padding: 7px 12px; border-bottom: 1px solid #0f0f1a; transition: background 0.15s; cursor: pointer; }
+.chart-item { display: flex; align-items: center; padding: 7px 12px; border-bottom: 1px solid #0f0f1a; cursor: pointer; transition: background 0.15s; }
 .chart-item:hover { background: #1f1f38; }
 .chart-item:last-child { border-bottom: none; }
 .rank { width: 26px; font-size: 14px; text-align: center; flex-shrink: 0; font-weight: bold; }
 .rank.r1 { color: #ffd700; } .rank.r2 { color: #c0c0c0; } .rank.r3 { color: #cd7f32; } .rank.other { color: #3a3a5a; font-size: 12px; }
 .app-name { font-size: 12.5px; color: #ccc; flex: 1; padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chart-item.top3 .app-name { color: #fff; font-weight: 500; }
-.ext-icon { font-size: 10px; color: #444; margin-left: 4px; flex-shrink: 0; }
+.ext-icon { font-size: 10px; color: #444; margin-left: 4px; }
 .no-data { padding: 20px; text-align: center; color: #555; font-size: 13px; }
 .news-section { background: #1a1a2e; border-radius: 12px; border: 1px solid #1e1e3a; overflow: hidden; }
 .news-header { background: linear-gradient(90deg,#0d2a1a,#082010); padding: 12px 16px; font-size: 13px; font-weight: bold; color: #4caf50; border-bottom: 2px solid #2e7d32; }
-.news-item { padding: 12px 16px; border-bottom: 1px solid #0f0f1a; display: flex; gap: 12px; align-items: flex-start; transition: background 0.15s; }
+.news-item { padding: 12px 16px; border-bottom: 1px solid #0f0f1a; display: flex; gap: 12px; align-items: flex-start; }
 .news-item:hover { background: #1f1f38; }
-.news-item:last-child { border-bottom: none; }
-.news-source-icon { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; flex-shrink: 0; margin-top: 2px; }
-.news-source-fallback { width: 20px; height: 20px; border-radius: 4px; background: #2a2a4a; color: #888; font-size: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; font-weight: bold; }
-.news-body { flex: 1; min-width: 0; }
-.news-body a { color: #90caf9; font-size: 13px; text-decoration: none; line-height: 1.5; display: block; }
+.news-source-icon { width: 20px; height: 20px; border-radius: 4px; flex-shrink: 0; }
+.news-body a { color: #90caf9; font-size: 13px; text-decoration: none; display: block; line-height: 1.5; }
 .news-body a:hover { color: #00d4aa; }
-.news-meta { display: flex; gap: 8px; margin-top: 4px; align-items: center; }
+.news-meta { display: flex; gap: 8px; margin-top: 4px; }
 .news-source-name { font-size: 11px; color: #00d4aa; }
 .news-date { font-size: 11px; color: #444; }
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.show { display: flex; }
-.modal { background: #1a1a2e; border-radius: 16px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid #2a2a4a; position: relative; }
+.modal { background: #1a1a2e; border-radius: 16px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid #2a2a4a; }
 .modal-close { position: sticky; top: 0; right: 0; float: right; background: #2a2a4a; border: none; color: #aaa; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 18px; margin: 10px 10px 0 0; display: flex; align-items: center; justify-content: center; z-index: 10; }
-.modal-close:hover { background: #3a3a5a; color: #fff; }
 .modal-body { padding: 16px 20px 24px; clear: both; }
 .app-modal-header { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
 .app-icon { width: 80px; height: 80px; border-radius: 18px; object-fit: cover; flex-shrink: 0; }
-.app-title-block { flex: 1; }
 .app-title-block h2 { font-size: 20px; color: #fff; margin-bottom: 4px; }
 .app-developer { font-size: 13px; color: #00d4aa; }
-.app-genre { font-size: 12px; color: #666; margin-top: 2px; }
 .app-rating { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
 .stars { color: #ffd700; font-size: 14px; }
 .rating-num { font-size: 13px; color: #aaa; }
@@ -82,12 +86,11 @@ select:focus { outline: none; border-color: #00d4aa; }
 .info-cell .value { font-size: 13px; color: #ddd; font-weight: 500; }
 .app-desc { font-size: 12px; color: #aaa; line-height: 1.7; margin: 12px 0; }
 .app-desc.collapsed { max-height: 80px; overflow: hidden; position: relative; }
-.app-desc.collapsed::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(transparent, #1a1a2e); }
+.app-desc.collapsed::after { content:''; position:absolute; bottom:0; left:0; right:0; height:30px; background:linear-gradient(transparent,#1a1a2e); }
 .show-more { background: none; border: none; color: #00d4aa; font-size: 12px; cursor: pointer; margin-bottom: 12px; }
 .screenshots { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin: 12px 0; }
 .screenshots img { height: 180px; border-radius: 10px; flex-shrink: 0; }
-.open-store-btn { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #00d4aa, #00b894); color: #003d2b; font-size: 14px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; text-align: center; text-decoration: none; margin-top: 16px; }
-.open-store-btn:hover { background: linear-gradient(135deg, #00ffcc, #00d4aa); }
+.open-store-btn { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg,#00d4aa,#00b894); color: #003d2b; font-size: 14px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; text-align: center; text-decoration: none; margin-top: 16px; }
 .modal-loading { text-align: center; padding: 60px 20px; color: #00d4aa; }
 </style>
 </head>
@@ -123,19 +126,15 @@ select:focus { outline: none; border-color: #00d4aa; }
     </optgroup>
   </select>
   <label>📅 日期</label>
-  <select id="daySelect" onchange="switchDay()" class="day-select">
-    <option value="0">今日</option>
-  </select>
+  <select id="daySelect" onchange="switchDay()" class="day-select"><option value="0">今日</option></select>
   <div class="date-tag" id="dateTag">載入中…</div>
 </div>
 
-<div id="loading" class="loading">
-  <div class="spinner"></div>
-  載入資料中，請稍候…
-</div>
+<div id="loading" class="loading"><div class="spinner"></div>載入資料中，請稍候…</div>
 
 <div id="mainContent" style="display:none">
   <div class="content">
+    <div id="analysisSection"></div>
     <div class="charts-grid" id="chartsGrid"></div>
     <div class="news-section">
       <div class="news-header">📰 遊戲新聞</div>
@@ -145,40 +144,36 @@ select:focus { outline: none; border-color: #00d4aa; }
 </div>
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal" id="modal">
+  <div class="modal">
     <button class="modal-close" onclick="closeModalDirect()">✕</button>
-    <div class="modal-body" id="modalBody">
-      <div class="modal-loading"><div class="spinner"></div>載入中...</div>
-    </div>
+    <div class="modal-body" id="modalBody"><div class="modal-loading"><div class="spinner"></div>載入中...</div></div>
   </div>
 </div>
 
 <script>
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbxKBRt_hT6vvOjn2d9ZTZqGevmrRbLSJigBvnBST8qbO8nvRLnW9ftYRHPXlnrPYeGe6w/exec';
-var daysData = [];
-var allData = null;
-var newsItems = [];
+var daysData = [], allData = null, newsItems = [], analysis = {};
 
 window.onload = function() {
   fetch(GAS_URL + '?action=data')
-    .then(function(r) { return r.json(); })
-    .then(function(result) {
+    .then(function(r){ return r.json(); })
+    .then(function(result){
       daysData = result.days || [];
       var daySelect = document.getElementById('daySelect');
       daySelect.innerHTML = '';
-      var labels = ['今日', '昨日', '前天'];
-      daysData.forEach(function(day, i) {
+      var labels = ['今日','昨日','前天'];
+      daysData.forEach(function(day, i){
         if (!day) return;
         var opt = document.createElement('option');
         opt.value = i;
-        opt.textContent = labels[i] + '（' + (day.today || '') + '）';
+        opt.textContent = labels[i] + '（' + (day.today||'') + '）';
         daySelect.appendChild(opt);
       });
       switchDay();
       document.getElementById('loading').style.display = 'none';
       document.getElementById('mainContent').style.display = 'block';
     })
-    .catch(function() {
+    .catch(function(){
       document.getElementById('loading').innerHTML = '<div style="color:#f44336;padding:40px">⚠️ 載入失敗，請重新整理</div>';
     });
 };
@@ -187,178 +182,64 @@ function switchDay() {
   var idx = parseInt(document.getElementById('daySelect').value) || 0;
   var day = daysData[idx];
   if (!day) return;
-  allData = day.allData;
+  allData   = day.allData   || {};
   newsItems = day.newsItems || [];
-  document.getElementById('dateTag').textContent = '📅 ' + (day.today || '');
+  analysis  = day.analysis  || {};
+  document.getElementById('dateTag').textContent = '📅 ' + (day.today||'');
   switchRegion();
   renderNews();
 }
 
-function doSearch() {
-  var q = document.getElementById('searchInput').value.trim();
-  var platform = document.getElementById('searchPlatform').value;
-  if (!q) return;
-  if (platform === 'ios') searchIos(q);
-  else searchGP(q);
+function switchRegion() {
+  var regionName = document.getElementById('regionSelect').value;
+  renderAnalysis(regionName);
+  renderCharts(regionName);
 }
 
-function searchIos(query) {
-  showModalLoading();
-  fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(query) + '&country=TW&entity=software&genreId=6014&limit=1&lang=zh_tw')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (!data.results || data.results.length === 0) { showModalError('找不到「' + query + '」'); return; }
-      showIosAppModal(data.results[0]);
-    })
-    .catch(function() { showModalError('搜尋失敗，請稍後再試'); });
-}
-
-function searchGP(query) {
-  showModalLoading();
-  fetch(GAS_URL + '?action=searchGP&q=' + encodeURIComponent(query))
-    .then(function(r) { return r.json(); })
-    .then(function(app) {
-      if (!app || !app.name) { showModalError('找不到「' + query + '」'); return; }
-      showGPAppModal(app);
-    })
-    .catch(function() { showModalError('搜尋失敗，請稍後再試'); });
-}
-
-function openAppModal(platform, appId, appName) {
-  if (platform === 'ios') {
-    showModalLoading();
-    fetch('https://itunes.apple.com/lookup?id=' + appId + '&country=TW&lang=zh_tw')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.results && data.results.length > 0) showIosAppModal(data.results[0]);
-        else { window.open('https://apps.apple.com/app/id' + appId, '_blank'); closeModalDirect(); }
-      })
-      .catch(function() { window.open('https://apps.apple.com/app/id' + appId, '_blank'); closeModalDirect(); });
-  } else {
-    showModalLoading();
-    fetch(GAS_URL + '?action=searchGP&q=' + encodeURIComponent(appName))
-      .then(function(r) { return r.json(); })
-      .then(function(app) {
-        if (app && app.name) showGPAppModal(app);
-        else { window.open('https://play.google.com/store/apps/details?id=' + appId, '_blank'); closeModalDirect(); }
-      })
-      .catch(function() { window.open('https://play.google.com/store/apps/details?id=' + appId, '_blank'); closeModalDirect(); });
+function renderAnalysis(regionName) {
+  var section = document.getElementById('analysisSection');
+  var regionAnalysis = analysis[regionName];
+  if (!regionAnalysis || regionAnalysis.length === 0) {
+    section.innerHTML = '';
+    return;
   }
-}
-
-function showIosAppModal(app) {
-  var storeUrl = app.trackViewUrl || ('https://apps.apple.com/app/id' + app.trackId);
-  var rating = app.averageUserRating ? app.averageUserRating.toFixed(1) : 'N/A';
-  var ratingCount = app.userRatingCount ? app.userRatingCount.toLocaleString() : '0';
-  var stars = '';
-  var r = Math.round(app.averageUserRating || 0);
-  for (var i = 1; i <= 5; i++) stars += (i <= r ? '★' : '☆');
-  var size = app.fileSizeBytes ? (app.fileSizeBytes / 1048576).toFixed(0) + ' MB' : 'N/A';
-  var genre = (app.genres && app.genres[0]) || 'N/A';
-  var screenshots = (app.screenshotUrls || []).slice(0, 4);
-  var desc = (app.description || '').replace(/\n/g, '<br>');
-  var icon = app.artworkUrl512 || app.artworkUrl100 || '';
-  var screenshotHtml = screenshots.length > 0
-    ? '<div class="screenshots">' + screenshots.map(function(s){ return '<img src="'+s+'" alt="">'; }).join('') + '</div>'
-    : '';
-  document.getElementById('modalBody').innerHTML =
-    '<div class="app-modal-header">' +
-    '<img class="app-icon" src="'+icon+'" alt="">' +
-    '<div class="app-title-block"><h2>' + esc(app.trackName) + '</h2>' +
-    '<div class="app-developer">' + esc(app.artistName) + '</div>' +
-    '<div class="app-genre">' + esc(genre) + '</div>' +
-    '<div class="app-rating"><span class="stars">'+stars+'</span><span class="rating-num">'+rating+' ('+ratingCount+'則)</span></div>' +
-    '</div></div>' +
-    '<div class="app-info-grid">' +
-    '<div class="info-cell"><div class="label">年齡分級</div><div class="value">'+esc(app.contentAdvisoryRating||'N/A')+'</div></div>' +
-    '<div class="info-cell"><div class="label">大小</div><div class="value">'+esc(size)+'</div></div>' +
-    '<div class="info-cell"><div class="label">類別</div><div class="value">'+esc(genre)+'</div></div>' +
-    '</div>' + screenshotHtml +
-    '<div class="app-desc collapsed" id="appDesc">' + desc + '</div>' +
-    '<button class="show-more" onclick="toggleDesc()">顯示更多 ▼</button>' +
-    '<a href="'+storeUrl+'" target="_blank" class="open-store-btn">📱 在 App Store 開啟</a>';
-  document.getElementById('modalOverlay').classList.add('show');
-}
-
-function showGPAppModal(app) {
-  var stars = '';
-  var r = Math.round(parseFloat(app.rating) || 0);
-  for (var i = 1; i <= 5; i++) stars += (i <= r ? '★' : '☆');
-  var screenshotHtml = app.screenshots && app.screenshots.length > 0
-    ? '<div class="screenshots">' + app.screenshots.map(function(s){ return '<img src="'+s+'=w200" alt="" style="height:180px;border-radius:10px;flex-shrink:0;">'; }).join('') + '</div>'
-    : '';
-  var desc = (app.description || '').replace(/\n/g, '<br>');
-  document.getElementById('modalBody').innerHTML =
-    '<div class="app-modal-header">' +
-    (app.icon ? '<img class="app-icon" src="'+app.icon+'=w80-h80" alt="">' : '<div class="app-icon" style="background:#1a3a2e;display:flex;align-items:center;justify-content:center;font-size:30px;">🤖</div>') +
-    '<div class="app-title-block"><h2>' + esc(app.name) + '</h2>' +
-    '<div class="app-developer">' + esc(app.developer) + '</div>' +
-    '<div class="app-genre">Android</div>' +
-    '<div class="app-rating"><span class="stars">'+stars+'</span><span class="rating-num">'+app.rating+' ('+esc(app.reviews)+'則)</span></div>' +
-    '</div></div>' + screenshotHtml +
-    '<div class="app-desc collapsed" id="appDesc">' + desc + '</div>' +
-    '<button class="show-more" onclick="toggleDesc()">顯示更多 ▼</button>' +
-    '<a href="'+app.storeUrl+'" target="_blank" class="open-store-btn">🤖 在 Google Play 開啟</a>';
-  document.getElementById('modalOverlay').classList.add('show');
-}
-
-function getSourceInfo(url, sourceName) {
-  var nameMap = {
-    '巴哈姆特': { name: '巴哈姆特 GNN', favicon: 'https://www.gamer.com.tw/favicon.ico' },
-    'GNN':      { name: '巴哈姆特 GNN', favicon: 'https://www.gamer.com.tw/favicon.ico' },
-    '4Gamers':  { name: '4Gamers',      favicon: 'https://www.4gamers.com.tw/favicon.ico' },
-    '玩家誌':   { name: '玩家誌',       favicon: 'https://www.gamebase.com.tw/favicon.ico' },
-    'Cool3c':   { name: 'Cool3c',       favicon: 'https://www.cool3c.com/favicon.ico' },
-    'iThome':   { name: 'iThome',       favicon: 'https://www.ithome.com.tw/favicon.ico' },
-    'ETtoday':  { name: 'ETtoday',      favicon: 'https://www.ettoday.net/favicon.ico' },
-    '自由時報': { name: '自由時報',     favicon: 'https://www.ltn.com.tw/favicon.ico' },
-    '中時':     { name: '中時新聞',     favicon: 'https://www.chinatimes.com/favicon.ico' },
-    '三立':     { name: '三立新聞',     favicon: 'https://www.setn.com/favicon.ico' },
-    'TVBS':     { name: 'TVBS',         favicon: 'https://news.tvbs.com.tw/favicon.ico' },
-    'Yahoo':    { name: 'Yahoo',        favicon: 'https://www.yahoo.com/favicon.ico' }
-  };
-  if (sourceName) {
-    var keys = Object.keys(nameMap);
-    for (var i = 0; i < keys.length; i++) {
-      if (sourceName.indexOf(keys[i]) !== -1) return nameMap[keys[i]];
-    }
-  }
-  try {
-    var hostname = new URL(url).hostname.replace('www.','');
-    var urlMap = {
-      'gamer.com.tw':   { name: '巴哈姆特 GNN', favicon: 'https://www.gamer.com.tw/favicon.ico' },
-      '4gamers.com.tw': { name: '4Gamers',      favicon: 'https://www.4gamers.com.tw/favicon.ico' },
-      'gamebase.com.tw':{ name: '玩家誌',        favicon: 'https://www.gamebase.com.tw/favicon.ico' },
-      'cool3c.com':     { name: 'Cool3c',        favicon: 'https://www.cool3c.com/favicon.ico' },
-      'ithome.com.tw':  { name: 'iThome',        favicon: 'https://www.ithome.com.tw/favicon.ico' },
-      'ettoday.net':    { name: 'ETtoday',       favicon: 'https://www.ettoday.net/favicon.ico' },
-      'ltn.com.tw':     { name: '自由時報',      favicon: 'https://www.ltn.com.tw/favicon.ico' },
-      'chinatimes.com': { name: '中時新聞',      favicon: 'https://www.chinatimes.com/favicon.ico' },
-      'setn.com':       { name: '三立新聞',      favicon: 'https://www.setn.com/favicon.ico' },
-      'tvbs.com.tw':    { name: 'TVBS',          favicon: 'https://news.tvbs.com.tw/favicon.ico' },
-      'udn.com':        { name: '聯合新聞',      favicon: 'https://udn.com/favicon.ico' },
-      'yahoo.com':      { name: 'Yahoo',         favicon: 'https://www.yahoo.com/favicon.ico' }
-    };
-    var urlKeys = Object.keys(urlMap);
-    for (var j = 0; j < urlKeys.length; j++) {
-      if (hostname.indexOf(urlKeys[j]) !== -1) return urlMap[urlKeys[j]];
-    }
-    return { name: sourceName || hostname, favicon: 'https://www.google.com/s2/favicons?domain=' + hostname + '&sz=32' };
-  } catch(e) {
-    return { name: sourceName || '未知來源', favicon: null };
-  }
+  var MAX_WEB = 25;
+  var html = '<div class="analysis-section"><div class="analysis-title">📊 排名變動分析（今日 vs 昨日）</div>';
+  var totalCount = 0;
+  regionAnalysis.forEach(function(chart) {
+    if (totalCount >= MAX_WEB) return;
+    var sliced = chart.findings.slice(0, MAX_WEB - totalCount);
+    if (sliced.length === 0) return;
+    html += '<div class="analysis-chart-label">' + chart.chartLabel + '</div>';
+    sliced.forEach(function(f) {
+      var badgeHtml = f.type === 'new'
+        ? '<span class="badge-new">🆕 新進前10</span>'
+        : '<span class="badge-rise">📈 +' + f.rise + '名</span>';
+      var rankText = f.type === 'new'
+        ? (f.oldRank ? '昨日 #' + f.oldRank : '新上榜')
+        : '#' + f.oldRank + ' → #' + f.newRank;
+      html += '<div class="analysis-item">'
+        + badgeHtml
+        + '<a href="' + f.bahaLink + '" target="_blank" class="analysis-name">' + esc(f.name) + '</a>'
+        + '<span class="analysis-rank">' + rankText + '</span>'
+        + '</div>';
+      totalCount++;
+    });
+  });
+  html += '</div>';
+  section.innerHTML = html;
 }
 
 function renderCharts(regionName) {
   var grid = document.getElementById('chartsGrid');
-  if (!allData) { grid.innerHTML = '<div class="no-data">請選擇地區</div>'; return; }
+  if (!allData) { grid.innerHTML = ''; return; }
   var data = allData[regionName];
   var medals = ['🥇','🥈','🥉'];
   var charts = [
-    { key: 'iosFree',  label: 'App Store 免費榜',    cls: 'ios', badge: 'FREE', platform: 'ios' },
-    { key: 'iosGross', label: 'App Store 收入榜',    cls: 'ios', badge: 'TOP$', platform: 'ios' },
-    { key: 'gpFree',   label: 'Google Play 免費榜',  cls: 'gp',  badge: 'FREE', platform: 'gp' },
-    { key: 'gpGross',  label: 'Google Play 最高收入', cls: 'gp',  badge: 'TOP$', platform: 'gp' }
+    { key:'iosFree',  label:'App Store 免費榜',    cls:'ios', badge:'FREE', platform:'ios' },
+    { key:'iosGross', label:'App Store 收入榜',    cls:'ios', badge:'TOP$', platform:'ios' },
+    { key:'gpFree',   label:'Google Play 免費榜',  cls:'gp',  badge:'FREE', platform:'gp'  },
+    { key:'gpGross',  label:'Google Play 最高收入', cls:'gp',  badge:'TOP$', platform:'gp'  }
   ];
   grid.innerHTML = '';
   charts.forEach(function(c) {
@@ -366,14 +247,13 @@ function renderCharts(regionName) {
     var icon = c.cls === 'ios' ? '📱' : '🤖';
     var items = '';
     if (games.length === 0) {
-      items = '<div class="no-data">暫無資料（下午2點更新）</div>';
+      items = '<div class="no-data">暫無資料</div>';
     } else {
       items = games.map(function(g, i) {
-        var rank = i + 1;
-        var rc = rank===1?'r1':rank===2?'r2':rank===3?'r3':'other';
+        var rank = i+1, rc = rank===1?'r1':rank===2?'r2':rank===3?'r3':'other';
         var rs = rank<=3 ? medals[i] : rank;
         var hasLink = g.appId && g.appId.length > 0;
-        var onclick = hasLink ? "openAppModal('" + c.platform + "','" + g.appId + "','" + g.name.replace(/'/g,'') + "')" : '';
+        var onclick = hasLink ? "openAppModal('"+c.platform+"','"+g.appId+"','"+g.name.replace(/'/g,'')+"')" : '';
         return '<div class="chart-item'+(rank<=3?' top3':'')+'"'+(onclick?' onclick="'+onclick+'"':'')+' style="'+(onclick?'cursor:pointer':'')+'">'
           + '<div class="rank '+rc+'">'+rs+'</div>'
           + '<div class="app-name">'+esc(g.name)+'</div>'
@@ -387,35 +267,127 @@ function renderCharts(regionName) {
 
 function renderNews() {
   var list = document.getElementById('newsList');
-  if (!newsItems || !newsItems.length) {
-    list.innerHTML = '<div class="news-item"><div class="news-body"><a>暫無新聞</a></div></div>';
-    return;
-  }
+  if (!newsItems || !newsItems.length) { list.innerHTML = '<div class="news-item"><div class="news-body"><a>暫無新聞</a></div></div>'; return; }
   list.innerHTML = newsItems.map(function(n) {
     var src = getSourceInfo(n.link, n.sourceName);
     var iconHtml = src.favicon
       ? '<img class="news-source-icon" src="'+src.favicon+'" onerror="this.style.display=\'none\'" alt="">'
-      : '<div class="news-source-fallback">'+src.name.charAt(0)+'</div>';
+      : '<div style="width:20px;height:20px;background:#2a2a4a;border-radius:4px;flex-shrink:0;"></div>';
     return '<div class="news-item">'+iconHtml+'<div class="news-body"><a href="'+n.link+'" target="_blank">'+esc(n.title)+'</a>'
       + '<div class="news-meta"><span class="news-source-name">'+esc(src.name)+'</span><span class="news-date">'+esc(n.dateStr)+'</span></div></div></div>';
   }).join('');
 }
 
-function switchRegion() { renderCharts(document.getElementById('regionSelect').value); }
-function showModalLoading() {
-  document.getElementById('modalBody').innerHTML = '<div class="modal-loading"><div class="spinner"></div>載入中...</div>';
+function doSearch() {
+  var q = document.getElementById('searchInput').value.trim();
+  var platform = document.getElementById('searchPlatform').value;
+  if (!q) return;
+  if (platform === 'ios') searchIos(q); else searchGP(q);
+}
+
+function searchIos(query) {
+  showModalLoading();
+  fetch('https://itunes.apple.com/search?term='+encodeURIComponent(query)+'&country=TW&entity=software&genreId=6014&limit=1&lang=zh_tw')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (!data.results || !data.results.length) { showModalError('找不到「'+query+'」'); return; }
+      showIosAppModal(data.results[0]);
+    }).catch(function(){ showModalError('搜尋失敗'); });
+}
+
+function searchGP(query) {
+  showModalLoading();
+  fetch(GAS_URL+'?action=searchGP&q='+encodeURIComponent(query))
+    .then(function(r){ return r.json(); })
+    .then(function(app){
+      if (!app || !app.name) { showModalError('找不到「'+query+'」'); return; }
+      showGPAppModal(app);
+    }).catch(function(){ showModalError('搜尋失敗'); });
+}
+
+function openAppModal(platform, appId, appName) {
+  if (platform === 'ios') {
+    showModalLoading();
+    fetch('https://itunes.apple.com/lookup?id='+appId+'&country=TW&lang=zh_tw')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (data.results && data.results.length) showIosAppModal(data.results[0]);
+        else { window.open('https://apps.apple.com/app/id'+appId,'_blank'); closeModalDirect(); }
+      }).catch(function(){ window.open('https://apps.apple.com/app/id'+appId,'_blank'); closeModalDirect(); });
+  } else {
+    showModalLoading();
+    fetch(GAS_URL+'?action=searchGP&q='+encodeURIComponent(appName))
+      .then(function(r){ return r.json(); })
+      .then(function(app){
+        if (app && app.name) showGPAppModal(app);
+        else { window.open('https://play.google.com/store/apps/details?id='+appId,'_blank'); closeModalDirect(); }
+      }).catch(function(){ window.open('https://play.google.com/store/apps/details?id='+appId,'_blank'); closeModalDirect(); });
+  }
+}
+
+function showIosAppModal(app) {
+  var storeUrl = app.trackViewUrl || ('https://apps.apple.com/app/id'+app.trackId);
+  var rating = app.averageUserRating ? app.averageUserRating.toFixed(1) : 'N/A';
+  var ratingCount = app.userRatingCount ? app.userRatingCount.toLocaleString() : '0';
+  var stars = ''; var r = Math.round(app.averageUserRating||0);
+  for (var i=1;i<=5;i++) stars += i<=r?'★':'☆';
+  var size = app.fileSizeBytes ? (app.fileSizeBytes/1048576).toFixed(0)+' MB' : 'N/A';
+  var genre = (app.genres&&app.genres[0])||'N/A';
+  var screenshots = (app.screenshotUrls||[]).slice(0,4);
+  var desc = (app.description||'').replace(/\n/g,'<br>');
+  var icon = app.artworkUrl512||app.artworkUrl100||'';
+  var ssHtml = screenshots.length ? '<div class="screenshots">'+screenshots.map(function(s){ return '<img src="'+s+'" alt="">'; }).join('')+'</div>' : '';
+  document.getElementById('modalBody').innerHTML =
+    '<div class="app-modal-header"><img class="app-icon" src="'+icon+'" alt="">'
+    +'<div class="app-title-block"><h2>'+esc(app.trackName)+'</h2><div class="app-developer">'+esc(app.artistName)+'</div>'
+    +'<div class="app-rating"><span class="stars">'+stars+'</span><span class="rating-num">'+rating+' ('+ratingCount+'則)</span></div></div></div>'
+    +'<div class="app-info-grid"><div class="info-cell"><div class="label">年齡分級</div><div class="value">'+esc(app.contentAdvisoryRating||'N/A')+'</div></div>'
+    +'<div class="info-cell"><div class="label">大小</div><div class="value">'+esc(size)+'</div></div>'
+    +'<div class="info-cell"><div class="label">類別</div><div class="value">'+esc(genre)+'</div></div></div>'
+    +ssHtml+'<div class="app-desc collapsed" id="appDesc">'+desc+'</div>'
+    +'<button class="show-more" onclick="toggleDesc()">顯示更多 ▼</button>'
+    +'<a href="'+storeUrl+'" target="_blank" class="open-store-btn">📱 在 App Store 開啟</a>';
   document.getElementById('modalOverlay').classList.add('show');
 }
-function showModalError(msg) {
-  document.getElementById('modalBody').innerHTML = '<div style="padding:40px;text-align:center;color:#f44336;">⚠️ ' + esc(msg) + '</div>';
+
+function showGPAppModal(app) {
+  var stars = ''; var r = Math.round(parseFloat(app.rating)||0);
+  for (var i=1;i<=5;i++) stars += i<=r?'★':'☆';
+  var ssHtml = app.screenshots && app.screenshots.length
+    ? '<div class="screenshots">'+app.screenshots.map(function(s){ return '<img src="'+s+'=w200" alt="" style="height:180px;border-radius:10px;flex-shrink:0;">'; }).join('')+'</div>' : '';
+  var desc = (app.description||'').replace(/\n/g,'<br>');
+  document.getElementById('modalBody').innerHTML =
+    '<div class="app-modal-header">'+(app.icon?'<img class="app-icon" src="'+app.icon+'=w80-h80" alt="">':'<div class="app-icon" style="background:#1a3a2e;display:flex;align-items:center;justify-content:center;font-size:30px;">🤖</div>')
+    +'<div class="app-title-block"><h2>'+esc(app.name)+'</h2><div class="app-developer">'+esc(app.developer)+'</div>'
+    +'<div class="app-rating"><span class="stars">'+stars+'</span><span class="rating-num">'+app.rating+' ('+esc(app.reviews)+'則)</span></div></div></div>'
+    +ssHtml+'<div class="app-desc collapsed" id="appDesc">'+desc+'</div>'
+    +'<button class="show-more" onclick="toggleDesc()">顯示更多 ▼</button>'
+    +'<a href="'+app.storeUrl+'" target="_blank" class="open-store-btn">🤖 在 Google Play 開啟</a>';
+  document.getElementById('modalOverlay').classList.add('show');
 }
-function closeModal(e) { if (e.target === document.getElementById('modalOverlay')) closeModalDirect(); }
+
+function getSourceInfo(url, sourceName) {
+  var nameMap = {'巴哈姆特':{name:'巴哈姆特 GNN',favicon:'https://www.gamer.com.tw/favicon.ico'},'GNN':{name:'巴哈姆特 GNN',favicon:'https://www.gamer.com.tw/favicon.ico'},'4Gamers':{name:'4Gamers',favicon:'https://www.4gamers.com.tw/favicon.ico'},'玩家誌':{name:'玩家誌',favicon:'https://www.gamebase.com.tw/favicon.ico'},'Cool3c':{name:'Cool3c',favicon:'https://www.cool3c.com/favicon.ico'},'iThome':{name:'iThome',favicon:'https://www.ithome.com.tw/favicon.ico'}};
+  if (sourceName) { var keys=Object.keys(nameMap); for(var i=0;i<keys.length;i++) if(sourceName.indexOf(keys[i])!==-1) return nameMap[keys[i]]; }
+  try {
+    var hostname = new URL(url).hostname.replace('www.','');
+    var urlMap = {'gamer.com.tw':{name:'巴哈姆特 GNN',favicon:'https://www.gamer.com.tw/favicon.ico'},'4gamers.com.tw':{name:'4Gamers',favicon:'https://www.4gamers.com.tw/favicon.ico'},'gamebase.com.tw':{name:'玩家誌',favicon:'https://www.gamebase.com.tw/favicon.ico'},'cool3c.com':{name:'Cool3c',favicon:'https://www.cool3c.com/favicon.ico'},'ithome.com.tw':{name:'iThome',favicon:'https://www.ithome.com.tw/favicon.ico'}};
+    var urlKeys=Object.keys(urlMap); for(var j=0;j<urlKeys.length;j++) if(hostname.indexOf(urlKeys[j])!==-1) return urlMap[urlKeys[j]];
+    return {name:sourceName||hostname, favicon:'https://www.google.com/s2/favicons?domain='+hostname+'&sz=32'};
+  } catch(e) { return {name:sourceName||'未知',favicon:null}; }
+}
+
+function showModalLoading() {
+  document.getElementById('modalBody').innerHTML='<div class="modal-loading"><div class="spinner"></div>載入中...</div>';
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function showModalError(msg) { document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:#f44336;">⚠️ '+esc(msg)+'</div>'; }
+function closeModal(e) { if(e.target===document.getElementById('modalOverlay')) closeModalDirect(); }
 function closeModalDirect() { document.getElementById('modalOverlay').classList.remove('show'); }
 function toggleDesc() {
-  var d = document.getElementById('appDesc');
-  var btn = d.nextElementSibling;
-  if (d.classList.contains('collapsed')) { d.classList.remove('collapsed'); btn.textContent = '收起 ▲'; }
-  else { d.classList.add('collapsed'); btn.textContent = '顯示更多 ▼'; }
+  var d=document.getElementById('appDesc'), btn=d.nextElementSibling;
+  if(d.classList.contains('collapsed')){ d.classList.remove('collapsed'); btn.textContent='收起 ▲'; }
+  else { d.classList.add('collapsed'); btn.textContent='顯示更多 ▼'; }
 }
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
