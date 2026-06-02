@@ -253,4 +253,646 @@ function safeThreatClr(threat){return TC[threat]||'#2dd4a8';}
 function IntelGameCard({g,onClick,ac}){
   const tc={critical:"tc",high:"th",medium:"tm",low:"tl"}[g.threat]||"";
   return(<div className={`gcard ${tc}`} onClick={()=>onClick(g)}>
-    <div className
+    <div className="gcard-h"><div className="gcard-t">{g.name}</div><Pill c={safeThreatClr(g.threat)} ch={`威脅:${TM[g.threat]||g.threat}`}/></div>
+    <div className="gcard-s">{g.developer||g.studio} · {g.region}{g.testType&&g.testType!=="未知"&&<span style={{color:"var(--cyan)"}}> · {g.testType}</span>}</div>
+    <div style={{display:"flex",gap:3,flexWrap:"wrap",margin:"4px 0"}}>
+      <Pill c={SC[g.stage]||"#545d68"} ch={SM[g.stage]||g.stage}/><Pill c={ac} ch={g.genre}/>
+      {(g.platform||[]).map(p=><Pill key={p} c="var(--muted)" ch={p}/>)}
+    </div>
+    {(()=>{const d=daysUntil(g.testDateStart);return d!==null&&d>=0&&d<=30?<div style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:4,marginBottom:4,display:"inline-block",background:d===0?"var(--red)":d<=3?"var(--orange)":d<=7?"var(--yellow)":"rgba(0,212,255,.1)",color:d<=3?"#000":d<=7?"#000":"var(--cyan)"}}>{d===0?"📢 今日開測":d===1?"⏰ 明日開測":`⏳ ${d} 天後開測`}</div>:null})()}
+    <div className="gcard-d">{g.desc}</div>
+    <div className="gcard-f">
+      <span>{g.testDateStart&&g.testDateStart!=="待確認"?g.testDateStart:g.launchEst||"未定"}</span>
+      {g.prereg&&<span style={{color:"var(--green)"}}>預註冊:{(g.prereg/10000).toFixed(0)}萬</span>}
+      <span style={{color:g.sentiment>80?"var(--green)":g.sentiment>60?"var(--yellow)":"var(--red)"}}>{g.sentiment}/100</span>
+    </div>
+  </div>);
+}
+
+function IntelModal({game:g,onClose}){
+  if(!g)return null;
+  const cat=(g.platform||[]).includes("Mobile")?"mobile":"console";
+  const ac=cat==="mobile"?"var(--mobile)":"var(--console)";
+  return(<div className="i-modal-bg" onClick={onClose}><div className="i-modal" onClick={e=>e.stopPropagation()}>
+    <button className="app-modal-x" onClick={onClose}>✕</button>
+    <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}}>
+      <Pill c={cat==="mobile"?"#ff6b35":"#7c5cfc"} ch={cat==="mobile"?"📱 手機遊戲":"🎮 主機/PC"}/>
+      <Pill c={safeThreatClr(g.threat)} ch={`威脅:${TM[g.threat]||g.threat}`}/>
+      <Pill c={SC[g.stage]||"#545d68"} ch={SM[g.stage]||g.stage}/>
+    </div>
+    <h2 style={{fontSize:20,fontWeight:900,marginBottom:3}}>{g.name}</h2>
+    {g.nameEn&&<div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{g.nameEn}</div>}
+    <div style={{fontSize:12,color:"var(--dim)",marginBottom:8}}>{(g.platform||[]).join(" / ")} · {g.region}</div>
+    <div style={{display:"flex",flexDirection:"column",gap:3,marginBottom:12,padding:"8px 10px",borderRadius:6,background:"var(--surface)",border:"1px solid var(--border)",fontSize:11}}>
+      <div><span style={{color:"var(--muted)",minWidth:60,display:"inline-block"}}>開發商：</span><span style={{fontWeight:600}}>{g.developer||g.studio}</span></div>
+      {g.publisher_tw&&<div><span style={{color:"var(--muted)"}}>台港澳代理：</span>{g.publisher_tw}</div>}
+      {g.publisher_global&&<div><span style={{color:"var(--muted)"}}>全球發行：</span>{g.publisher_global}</div>}
+      {g.testType&&g.testType!=="未知"&&<div><span style={{color:"var(--muted)"}}>測試性質：</span><span style={{color:"var(--cyan)",fontWeight:600}}>{g.testType}</span></div>}
+      {g.testDateStart&&g.testDateStart!=="待確認"&&<div><span style={{color:"var(--muted)"}}>測試時間：</span><span style={{fontWeight:600}}>{g.testDateStart}{g.testDateEnd&&g.testDateEnd!=="待確認"?` ～ ${g.testDateEnd}`:""}</span></div>}
+    </div>
+    <div style={{display:"flex",gap:8,marginBottom:12}}>
+      <div className="i-sbox"><div className="lb">預註冊</div><div className="vl" style={{color:"var(--green)",fontSize:16}}>{g.prereg?`${(g.prereg/10000).toFixed(0)}萬`:"N/A"}</div></div>
+      <div className="i-sbox"><div className="lb">情感</div><div className="vl" style={{color:g.sentiment>80?"var(--green)":g.sentiment>60?"var(--yellow)":"var(--red)",fontSize:16}}>{g.sentiment}</div></div>
+      <div className="i-sbox"><div className="lb">上線</div><div className="vl" style={{color:"var(--cyan)",fontSize:14}}>{g.launchEst||"未定"}</div></div>
+      <div className="i-sbox"><div className="lb">模式</div><div className="vl" style={{color:"var(--pink)",fontSize:14}}>{g.model}</div></div>
+    </div>
+    <p style={{fontSize:12,color:"var(--dim)",lineHeight:1.7,marginBottom:12}}>{g.desc}</p>
+    <div style={{display:"flex",gap:3,flexWrap:"wrap",marginBottom:12}}>{(g.tags||[]).map(t=><Pill key={t} c={ac} ch={t}/>)}</div>
+    {g.sourceLinks&&g.sourceLinks.length>0&&<div style={{marginBottom:12,display:"flex",gap:6,flexWrap:"wrap"}}>
+      <span style={{fontSize:11,color:"var(--muted)"}}>🔗 來源：</span>
+      {g.sourceLinks.map((l,i)=><a key={i} href={l.url} target="_blank" rel="noopener" style={{fontSize:11,color:"var(--cyan)",padding:"2px 8px",borderRadius:5,background:"rgba(0,212,255,.08)",border:"1px solid rgba(0,212,255,.15)"}}>{l.label} ↗</a>)}
+    </div>}
+    {g.threatAnalysis&&<div style={{marginBottom:12}}>
+      <div style={{fontSize:11,fontWeight:700,color:"var(--red)",marginBottom:6}}>⚠️ 威脅分析</div>
+      <div style={{padding:"10px 12px",borderRadius:8,background:"rgba(255,107,107,.05)",border:"1px solid rgba(255,107,107,.15)",fontSize:12,color:"var(--dim)",lineHeight:1.7,whiteSpace:"pre-line"}}>{g.threatAnalysis}</div>
+    </div>}
+    {g.launchRegions&&g.launchRegions.length>0&&<div style={{marginBottom:12}}>
+      <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",marginBottom:6}}>各地區上線狀態</div>
+      {g.launchRegions.map((r,i)=>{const sc=r.status.includes("已上線")?"var(--green)":r.status.includes("封測")?"var(--cyan)":r.status.includes("預註冊")?"var(--orange)":"var(--muted)";
+        return<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 8px",borderRadius:5,background:"var(--surface)",fontSize:11,marginBottom:3}}>
+          <span style={{fontWeight:700,minWidth:80}}>{FLAG[r.region]||"📍"} {r.region}</span>
+          <Pill c={sc} ch={r.status}/><span style={{color:"var(--muted)",fontSize:10}}>{r.date||""}</span>
+        </div>})}
+    </div>}
+    {g.history&&g.history.length>0&&<>
+      <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,margin:"10px 0 6px"}}>開發時間軸</div>
+      <div className="tl-track">{g.history.map((h,i)=><React.Fragment key={i}>
+        <div className="tl-node">
+          <div className="tl-dot" style={{background:SC[h.s]||"var(--cyan)"}}/>
+          <div style={{fontSize:9,fontWeight:700,color:SC[h.s]||"var(--cyan)",marginTop:2}}>{SM[h.s]||h.s}</div>
+          <div style={{fontSize:8,color:"var(--muted)"}}>{h.date}</div>
+        </div>
+        {i<g.history.length-1&&<div className="tl-line" style={{background:`linear-gradient(to right,${SC[h.s]||"#00d4ff"},${SC[g.history[i+1].s]||"#00d4ff"})`}}/>}
+      </React.Fragment>)}</div>
+    </>}
+  </div></div>);
+}
+
+function BriefView({plat,data}){
+  if(!data||!data.items||!data.items.length)return<div className="empty"><div className="ic">📋</div><div>尚未載入簡報</div></div>;
+  const items=data.items.filter(b=>b.platform===plat);
+  if(!items.length)return<div className="empty"><div className="ic">📋</div><div>此分類暫無簡報</div></div>;
+  return(<div>
+    <div style={{fontSize:12,color:"var(--dim)",marginBottom:14,padding:"8px 12px",borderRadius:8,background:"var(--surface)",border:"1px solid var(--border)"}}>
+      📋 <strong>每日簡報</strong> — 更新: {data.lastUpdated?new Date(data.lastUpdated).toLocaleString("zh-TW"):"N/A"}</div>
+    {items.map((it,i)=>{const pr=PM[it.priority]||PM.info;return(<div key={it.id||i} className={`bitem ${pr.c}`}>
+      <div style={{display:"flex",gap:6,alignItems:"start"}}>
+        <span style={{fontSize:18}}>{it.icon}</span>
+        <div style={{flex:1}}>
+          <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4,flexWrap:"wrap"}}><Pill c={pr.k} ch={pr.l}/><span className="bitem-t" style={{margin:0}}>{it.title}</span></div>
+          <div className="bitem-d">{it.detail}</div>
+          <div className="bitem-a">💡 {it.action}</div>
+        </div>
+      </div>
+    </div>)})}
+  </div>);}
+
+function QuarterlyView({plat,data}){
+  if(!data||!data.quarters)return<div className="empty"><div className="ic">📊</div><div>尚未載入季度資料</div></div>;
+  const qs=["Q1","Q2","Q3","Q4"];const qc={"Q1":"#00d4ff","Q2":"#2dd4a8","Q3":"#ffaa33","Q4":"#ff6b6b"};
+  return(<div>
+    {qs.map(q=>{const qd=data.quarters[q];if(!qd)return null;const ev=(qd.events||[]).filter(e=>e.platform===plat);
+    return(<div key={q} className="qsection"><div className="qheader" style={{background:`${qc[q]}08`,border:`1px solid ${qc[q]}22`}}>
+      <div className="qbadge" style={{background:qc[q]}}>{q}</div>
+      <span style={{fontSize:13,fontWeight:700}}>{qd.label}</span>
+      <span style={{fontSize:11,color:"var(--muted)",marginLeft:"auto"}}>{ev.length} 事件</span></div>
+      {ev.length>0?<div className="qevents">{ev.map((e,i)=><div key={i} className="qev">
+        <span style={{color:"var(--muted)",minWidth:70,fontWeight:600}}>{e.date}</span>
+        <Pill c={SC[e.type]||"#00d4ff"} ch={SM[e.type]||e.type}/>
+        <span style={{fontWeight:700,minWidth:120}}>{e.product}</span>
+        <span style={{color:"var(--dim)",flex:1}}>{e.detail}</span>
+      </div>)}</div>:<div style={{padding:"10px 16px",fontSize:11,color:"var(--muted)"}}>尚無事件</div>}
+    </div>)})}
+  </div>);}
+
+function GanttView({games,onSelect}){
+  const now=new Date();const ny=now.getFullYear();const nm=now.getMonth()+1;
+  const months=[];
+  for(let y=ny-1;y<=ny+2;y++){for(let m=1;m<=12;m++)months.push({y,m,lb:MZH[m-1],qs:m===1||m===4||m===7||m===10});}
+  const mi=(y,m)=>months.findIndex(t=>t.y===y&&t.m===m);
+  const ni=mi(ny,nm);
+  const sorted=[...games].sort((a,b)=>{const da=parseD(a.launchEst);const db=parseD(b.launchEst);if(!da&&!db)return 0;if(!da)return 1;if(!db)return-1;return(da.y*12+da.m)-(db.y*12+db.m);});
+  function barInfo(g){let si=null;if(g.history&&g.history.length>0){const d=parseD(g.history[0].date);if(d)si=mi(d.y,d.m);}let ei=null;const ld=parseD(g.launchEst);if(ld)ei=mi(ld.y,ld.m);if(si===null&&ei!==null)si=Math.max(0,ei-3);if(si===null)si=0;if(ei===null)ei=months.length-1;si=Math.max(0,Math.min(si,months.length-1));ei=Math.max(0,Math.min(ei,months.length-1));return{si,ei};}
+  return(<div>
+    <div className="gantt-wrap"><div className="gantt">
+      <div className="gantt-hdr"><div className="gantt-lbl">產品</div><div className="gantt-cols">
+        {months.map((t,i)=><div key={i} className={`gantt-mh${t.y===ny&&t.m===nm?" now":""}${t.qs?" qs":""}`}>{t.lb}</div>)}
+      </div></div>
+      {sorted.map(g=>{const{si,ei}=barInfo(g);const l=`${(si/months.length)*100}%`;const w=`${(Math.max(1,ei-si+1)/months.length)*100}%`;
+      const tt=g.testType||"";const barClr=tt.includes("不刪檔")?"var(--red)":tt.includes("刪檔計費")?"var(--orange)":tt.includes("刪檔不計費")?"var(--green)":tt.includes("限量")?"var(--cyan)":"var(--muted)";
+      return(<div key={g.id} className="gantt-row">
+        <div className="gantt-row-lbl"><div style={{width:3,height:16,borderRadius:1,background:safeThreatClr(g.threat),flexShrink:0}}/><div className="gantt-row-nm" title={g.name}>{g.name}</div></div>
+        <div className="gantt-row-chart">{months.map((_,i)=><div key={i} className={`gantt-cell${months[i].qs?" qs":""}`}/>)}
+          {ni>=0&&<div className="gantt-today" style={{left:`${(ni/months.length)*100}%`}}/>}
+          <div className="gantt-bar" style={{left:l,width:w,background:barClr,border:`1px solid ${safeThreatClr(g.threat)}`}} onClick={()=>onSelect(g)} title={`${g.name} — ${g.launchEst}`}><span className="gantt-bar-t">{g.launchEst}</span></div>
+        </div>
+      </div>);})}
+    </div></div>
+  </div>);}
+
+function ThreatView({games,onSelect}){
+  const threats=games.filter(g=>g.threat==="critical"||g.threat==="high").sort((a,b)=>(b.prereg||0)-(a.prereg||0));
+  return(<div>
+    <div className="i-stats" style={{marginBottom:16}}>
+      {["critical","high","medium","low"].map(t=>{const n=games.filter(g=>g.threat===t).length;return<div key={t} className="i-sbox">
+        <div className="lb">威脅{TM[t]}</div><div className="vl" style={{color:TC[t]}}>{n}</div></div>})}
+    </div>
+    {threats.map(g=>(<div key={g.id} className="threat-card" style={{borderLeftColor:safeThreatClr(g.threat),cursor:"pointer"}} onClick={()=>onSelect(g)}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:8,marginBottom:6,flexWrap:"wrap"}}>
+        <div><div style={{fontSize:15,fontWeight:800}}>{g.name}</div><div style={{fontSize:11,color:"var(--muted)"}}>{g.studio} · {g.genre} · {g.launchEst||"未定"}</div></div>
+        <div style={{display:"flex",gap:4}}><Pill c={safeThreatClr(g.threat)} ch={`威脅:${TM[g.threat]}`}/><Pill c={SC[g.stage]||"#545d68"} ch={SM[g.stage]||g.stage}/></div>
+      </div>
+      {g.prereg&&<div style={{fontSize:11,color:"var(--green)",marginBottom:4}}>📊 預註冊: {(g.prereg/10000).toFixed(0)} 萬</div>}
+      {g.threatAnalysis&&<div style={{padding:"8px 10px",borderRadius:6,background:"rgba(255,107,107,.05)",border:"1px solid rgba(255,107,107,.15)",fontSize:12,color:"var(--dim)",lineHeight:1.7,whiteSpace:"pre-line"}}>⚠️ <strong>威脅分析：</strong>{g.threatAnalysis}</div>}
+    </div>))}
+    {!threats.length&&<div className="empty"><div className="ic">✅</div><div>此分類無高威脅產品</div></div>}
+  </div>);}
+
+function TrackingView({games}){
+  const tracked=games.filter(g=>g.category==="tracking");
+  if(!tracked.length)return<div className="empty"><div className="ic">📡</div><div>無追蹤中的長期營運產品</div></div>;
+  return(<div>
+    {tracked.map(g=>{const hasEvent=g.eventNote&&g.eventNote.includes("⚡");
+    return(<div key={g.id} style={{background:"var(--surface)",borderRadius:10,padding:16,border:`1px solid ${hasEvent?"var(--orange)":"var(--border)"}`,marginBottom:10,borderLeft:`4px solid ${hasEvent?"var(--orange)":"var(--border2)"}`}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"start",gap:8,marginBottom:6,flexWrap:"wrap"}}>
+        <div><div style={{fontSize:15,fontWeight:800}}>{g.name} <span style={{fontSize:11,color:"var(--muted)",fontWeight:400}}>{g.nameEn}</span></div>
+          <div style={{fontSize:11,color:"var(--muted)"}}>{g.studio} · {g.genre}</div></div>
+        <div style={{display:"flex",gap:4}}>{hasEvent&&<Pill c="var(--orange)" ch="🔥 有重大事件"/>}<Pill c="var(--green)" ch="營運中"/></div>
+      </div>
+      {g.currentEvent&&<div style={{fontSize:12,fontWeight:600,color:"var(--cyan)",marginBottom:4}}>📌 {g.currentEvent}</div>}
+      {g.eventNote&&<div style={{padding:"8px 10px",borderRadius:6,background:hasEvent?"rgba(255,170,51,.06)":"var(--card)",border:`1px solid ${hasEvent?"rgba(255,170,51,.15)":"var(--border)"}`,fontSize:11,color:"var(--dim)",lineHeight:1.6}}>{g.eventNote}</div>}
+    </div>);})}
+  </div>);}
+
+function TrendView({games}){
+  const genreMap={};games.forEach(g=>{genreMap[g.genre]=(genreMap[g.genre]||0)+1;});
+  const genres=Object.entries(genreMap).sort((a,b)=>b[1]-a[1]);
+  const maxG=Math.max(...genres.map(g=>g[1]),1);
+  const upcoming=games.filter(g=>["announced","pre-reg","cbt","soft-launch"].includes(g.stage));
+  const upGenre={};upcoming.forEach(g=>{upGenre[g.genre]=(upGenre[g.genre]||0)+1;});
+  const liveGenre={};games.filter(g=>g.stage==="live-ops").forEach(g=>{liveGenre[g.genre]=(liveGenre[g.genre]||0)+1;});
+  const saturation=Object.keys(upGenre).map(genre=>({genre,dev:upGenre[genre]||0,live:liveGenre[genre]||0,sat:liveGenre[genre]?(upGenre[genre]/liveGenre[genre]).toFixed(1):"新品類"})).sort((a,b)=>(parseFloat(b.sat)||99)-(parseFloat(a.sat)||99));
+  return(<div>
+    <div className="i-stats" style={{marginBottom:16}}>
+      <div className="i-sbox"><div className="lb">最熱品類</div><div className="vl" style={{color:"var(--cyan)",fontSize:14}}>{genres[0]?genres[0][0]:"—"}</div></div>
+      <div className="i-sbox"><div className="lb">開發中</div><div className="vl" style={{color:"var(--orange)"}}>{upcoming.length}</div></div>
+      <div className="i-sbox"><div className="lb">已上線</div><div className="vl" style={{color:"var(--green)"}}>{games.filter(g=>g.stage==="live-ops").length}</div></div>
+      <div className="i-sbox"><div className="lb">高威脅以上</div><div className="vl" style={{color:"var(--red)"}}>{games.filter(g=>g.threat==="critical"||g.threat==="high").length}</div></div>
+    </div>
+    <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
+      <div style={{flex:1,minWidth:280,background:"var(--surface)",borderRadius:10,padding:16,border:"1px solid var(--border)"}}>
+        <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>品類分佈</div>
+        {genres.map(([genre,count],i)=><div key={genre} style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+          <span style={{width:90,fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{genre}</span>
+          <div style={{flex:1,height:14,borderRadius:4,background:"var(--border)",overflow:"hidden"}}>
+            <div style={{width:`${(count/maxG)*100}%`,height:"100%",borderRadius:4,background:i<2?"var(--cyan)":i<4?"var(--console)":"var(--muted)"}}/>
+          </div>
+          <span style={{fontSize:12,fontWeight:800,minWidth:20}}>{count}</span>
+        </div>)}
+      </div>
+      <div style={{flex:1,minWidth:280,background:"var(--surface)",borderRadius:10,padding:16,border:"1px solid var(--border)"}}>
+        <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>品類飽和度（開發中÷已上線）</div>
+        {saturation.map(d=>{const sn=parseFloat(d.sat);const clr=isNaN(sn)?"var(--cyan)":sn>=3?"var(--red)":sn>=2?"var(--orange)":"var(--green)";
+        return<div key={d.genre} style={{display:"flex",alignItems:"center",gap:8,marginBottom:5,padding:"4px 8px",borderRadius:6,background:"var(--card)"}}>
+          <span style={{width:90,fontSize:11,fontWeight:600}}>{d.genre}</span>
+          <span style={{fontSize:10,color:"var(--muted)"}}>開發:{d.dev}</span>
+          <span style={{fontSize:10,color:"var(--muted)"}}>上線:{d.live}</span>
+          <span style={{fontSize:14,fontWeight:800,color:clr,marginLeft:"auto"}}>{d.sat}</span>
+        </div>})}
+      </div>
+    </div>
+  </div>);}
+
+// ── 修正版 LaunchView ──
+function LaunchView({games}){
+  const now=new Date();
+  const curYear=now.getFullYear();
+  const curM=now.getMonth(); // 0-indexed
+  const BAR_MAX_H=100;
+
+  // 預計算每個月的產品列表
+  const monthData=useMemo(()=>{
+    return MZH.map((_,mi)=>{
+      const items=games.filter(g=>{
+        const d=parseD(g.launchEst);
+        if(!d)return false;
+        return d.y>=(curYear-1)&&d.y<=(curYear+1)&&d.m===(mi+1);
+      });
+      return{total:items.length,names:items.map(g=>g.name),items};
+    });
+  },[games,curYear]);
+
+  const max=useMemo(()=>Math.max(...monthData.map(m=>m.total),1),[monthData]);
+
+  // 統計可解析的產品數量（用於除錯顯示）
+  const parseable=games.filter(g=>parseD(g.launchEst)!==null).length;
+
+  return(<div>
+    <div style={{fontSize:12,color:"var(--dim)",marginBottom:14,padding:"8px 12px",borderRadius:8,background:"var(--surface)",border:"1px solid var(--border)"}}>
+      🚀 <strong>上線時機分析</strong> — 各月競品密度（{curYear-1}～{curYear+1}年）
+      <span style={{marginLeft:8,color:"var(--muted)"}}>共 {games.length} 款 · {parseable} 款有日期資料</span>
+    </div>
+
+    {/* 長條圖 */}
+    <div style={{background:"var(--surface)",borderRadius:10,padding:"16px 16px 8px",border:"1px solid var(--border)",marginBottom:16}}>
+      <div style={{display:"flex",alignItems:"flex-end",gap:2,height:BAR_MAX_H+"px",marginBottom:4}}>
+        {monthData.map((md,i)=>{
+          const h=md.total>0?Math.max(Math.round((md.total/max)*BAR_MAX_H),4):0;
+          const clr=md.total>4?"var(--red)":md.total>2?"var(--orange)":md.total>0?"var(--cyan)":"var(--border)";
+          return<div key={i} style={{flex:1,height:h+"px",background:clr,borderRadius:"3px 3px 0 0",minWidth:16,cursor:md.total>0?"pointer":"default",outline:i===curM?"2px solid var(--cyan)":"none",outlineOffset:"-1px",transition:"height .3s"}} title={md.names.join("、")}/>;
+        })}
+      </div>
+      <div style={{display:"flex",gap:2,borderTop:"1px solid var(--border2)",paddingTop:4}}>
+        {monthData.map((md,i)=>(
+          <div key={i} style={{flex:1,textAlign:"center"}}>
+            <div style={{fontSize:9,color:i===curM?"var(--cyan)":"var(--muted)",fontWeight:i===curM?700:400}}>{MZH[i]}</div>
+            <div style={{fontSize:10,fontWeight:700,color:md.total>0?"var(--text)":"transparent",minHeight:14}}>{md.total||""}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* 月份明細 */}
+    <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>
+      各月上線產品明細
+    </div>
+    {parseable===0&&<div className="empty"><div className="ic">📅</div><div>產品資料中沒有可解析的日期格式<br/><span style={{fontSize:11,color:"var(--muted)"}}>支援格式：2026-06、2026-Q2、2026/06、2026年6月、2026</span></div></div>}
+    {parseable>0&&<div style={{display:"flex",gap:0,overflowX:"auto",border:"1px solid var(--border)",borderRadius:8,overflow:"hidden"}}>
+      {monthData.map((md,i)=>(
+        <div key={i} style={{flex:1,minWidth:80,borderRight:i<11?"1px solid var(--border)":"none"}}>
+          <div style={{
+            textAlign:"center",padding:"6px 4px",fontSize:11,fontWeight:800,
+            color:md.total>3?"var(--red)":md.total>0?"var(--text)":"var(--muted)",
+            background:i===curM?"rgba(0,212,255,.08)":md.total>0?"var(--card2)":"transparent",
+            borderBottom:"1px solid var(--border)"
+          }}>{MZH[i]}{md.total>0&&<span style={{fontSize:9,color:"var(--muted)",marginLeft:3}}>({md.total})</span>}</div>
+          <div style={{padding:"4px"}}>
+            {md.items.map((g,gi)=>{
+              const clr=safeThreatClr(g.threat);
+              return<div key={g.id||gi} style={{
+                padding:"3px 5px",marginBottom:2,borderRadius:4,
+                background:clr+"18",borderLeft:"2px solid "+clr,
+                fontSize:9,lineHeight:1.4,cursor:"pointer"
+              }} title={g.launchEst||""}>
+                <div style={{fontWeight:700,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{g.name}</div>
+                {g.launchEst&&<div style={{fontSize:8,color:"var(--muted)"}}>{g.launchEst}</div>}
+              </div>;
+            })}
+            {md.total===0&&<div style={{fontSize:9,color:"var(--muted)",textAlign:"center",padding:"8px 2px"}}>—</div>}
+          </div>
+        </div>
+      ))}
+    </div>}
+  </div>);
+}
+
+function IndustryView(){
+  const[data]=useJson(`${INTEL_BASE}/industry-trends.json`,null);
+  const catClr={"財報":"var(--orange)","版號":"var(--red)","市場":"var(--cyan)","收購":"var(--pink)","技術":"var(--green)","全球化":"var(--console)"};
+  if(!data||!data.trends||!data.trends.length)return<div className="empty"><div className="ic">🏢</div><div>產業趨勢資料尚未載入</div></div>;
+  return(<div>
+    {data.trends.map((t,i)=>{const clr=catClr[t.category]||"var(--cyan)";return(
+      <div key={i} style={{background:"var(--surface)",borderRadius:10,padding:16,border:"1px solid var(--border)",marginBottom:10,borderLeft:`4px solid ${clr}`}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,flexWrap:"wrap",gap:6}}>
+          <span style={{fontSize:14,fontWeight:700}}>{t.title}</span>
+          <div style={{display:"flex",gap:4}}><Pill c={clr} ch={t.category}/>{t.date&&<span style={{fontSize:10,color:"var(--muted)"}}>{t.date}</span>}</div>
+        </div>
+        <div style={{fontSize:12,color:"var(--dim)",lineHeight:1.7,marginBottom:8}}>{t.detail}</div>
+        {t.pmInsight&&<div style={{padding:"8px 10px",borderRadius:6,background:"rgba(0,212,255,.05)",border:"1px solid rgba(0,212,255,.1)",fontSize:11,color:"var(--cyan)"}}>💡 PM 觀點：{t.pmInsight}</div>}
+      </div>)})}
+  </div>);}
+
+function QProductsView({games,onSelect,ac}){
+  const qc={"Q1":"#00d4ff","Q2":"#2dd4a8","Q3":"#ffaa33","Q4":"#ff6b6b"};
+  const ql={"Q1":"第一季 (1-3月)","Q2":"第二季 (4-6月)","Q3":"第三季 (7-9月)","Q4":"第四季 (10-12月)"};
+  const grouped={"Q1":[],"Q2":[],"Q3":[],"Q4":[],"未定":[]};
+  games.forEach(g=>{const q=getQ(g.launchEst);if(q&&grouped[q])grouped[q].push(g);else grouped["未定"].push(g);});
+  return(<div>{["Q1","Q2","Q3","Q4","未定"].map(q=>{const items=grouped[q];if(!items.length)return null;const clr=qc[q]||"var(--muted)";
+    return(<div key={q} style={{marginBottom:24}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"8px 14px",borderRadius:8,background:`${clr}0a`,border:`1px solid ${clr}22`}}>
+        <div style={{minWidth:36,height:24,borderRadius:12,background:clr,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:800,color:"#000"}}>{q}</div>
+        <span style={{fontSize:14,fontWeight:700}}>{ql[q]||"上線時間未定"}</span>
+        <span style={{fontSize:11,color:"var(--muted)",marginLeft:"auto"}}>{items.length} 款</span>
+      </div>
+      <div className="i-grid">{items.map(g=><IntelGameCard key={g.id} g={g} onClick={onSelect} ac={ac}/>)}</div>
+    </div>)})}</div>);}
+
+// ─────────────────────────────────────────
+// INTEL TAB
+// ─────────────────────────────────────────
+function IntelTab(){
+  const[plat,setPlat]=useState("mobile");
+  const[mod,setMod]=useState("list");
+  const[search,setSearch]=useState("");
+  const[sf,setSf]=useState("all");
+  const[tf,setTf]=useState("all");
+  const[sel,setSel]=useState(null);
+  const[products,pLd]=useJson(`${INTEL_BASE}/products.json`,[]);
+  const[brief]=useJson(`${INTEL_BASE}/daily-brief.json`,{items:[]});
+  const[qdata]=useJson(`${INTEL_BASE}/quarterly.json`,{year:2026,quarters:{}});
+  const all=products||[];
+  const mob=useMemo(()=>all.filter(g=>g.platform&&g.platform.includes("Mobile")),[all]);
+  const con=useMemo(()=>all.filter(g=>!g.platform||!g.platform.includes("Mobile")),[all]);
+  const base=plat==="mobile"?mob:con;
+  const ac=plat==="mobile"?"var(--mobile)":"var(--console)";
+  const filtered=useMemo(()=>{
+    let r=base;
+    if(search.trim()){const q=search.toLowerCase();r=r.filter(g=>g.name.toLowerCase().includes(q)||(g.nameEn||"").toLowerCase().includes(q)||(g.studio||"").toLowerCase().includes(q)||(g.genre||"").toLowerCase().includes(q)||(g.tags||[]).some(t=>t.toLowerCase().includes(q)));}
+    if(sf!=="all")r=r.filter(g=>g.stage===sf);
+    if(tf!=="all")r=r.filter(g=>g.threat===tf);
+    return r;
+  },[base,search,sf,tf]);
+  const MODS=[
+    {id:"list",l:"產品總覽",i:"📋"},{id:"kanban",l:"階段看板",i:"🛰"},{id:"threat",l:"威脅分析",i:"⚠️"},{id:"tracking",l:"追蹤",i:"📡"},
+    {id:"gantt",l:"甘特圖",i:"📊"},{id:"qprod",l:"季度產品",i:"📦"},
+    {id:"trend",l:"趨勢",i:"📈"},{id:"launch",l:"上線時機",i:"🚀"},
+    {id:"brief",l:"每日簡報",i:"☀️"},{id:"quarterly",l:"季度事件",i:"📅"},{id:"industry",l:"產業動態",i:"🏢"},
+  ];
+  const showFilters=["list","kanban"].includes(mod);
+  if(pLd)return<div className="loading"><div className="spinner"/><div>載入情報資料...</div></div>;
+  return(<div className="i-wrap">
+    <div className="i-plat-tabs">
+      <button className={`i-ptab ${plat==="mobile"?"am":""}`} onClick={()=>{setPlat("mobile");setSf("all");setTf("all");setSearch("");}}>📱 手機遊戲<span className="badge">{mob.length}</span></button>
+      <button className={`i-ptab ${plat==="console"?"ac":""}`} onClick={()=>{setPlat("console");setSf("all");setTf("all");setSearch("");}}>🎮 主機/PC<span className="badge">{con.length}</span></button>
+    </div>
+    <div className="i-content">
+      <div className="i-views">{MODS.map(m=><button key={m.id} className={`i-view ${mod===m.id?"on":""}`} onClick={()=>setMod(m.id)}>{m.i} {m.l}</button>)}</div>
+      {showFilters&&<>
+        <div className="i-stats">
+          <div className="i-sbox"><div className="lb">產品數</div><div className="vl" style={{color:ac}}>{base.length}</div></div>
+          <div className="i-sbox"><div className="lb">高威脅+</div><div className="vl" style={{color:"var(--red)"}}>{base.filter(g=>g.threat==="critical"||g.threat==="high").length}</div></div>
+          <div className="i-sbox"><div className="lb">封測中</div><div className="vl" style={{color:"var(--cyan)"}}>{base.filter(g=>g.stage==="cbt").length}</div></div>
+          <div className="i-sbox"><div className="lb">即將上線</div><div className="vl" style={{color:"var(--console)"}}>{base.filter(g=>["soft-launch","pre-reg"].includes(g.stage)).length}</div></div>
+        </div>
+        <div className="i-search">
+          <input className="i-sinput" placeholder="🔍 搜尋遊戲名稱、開發商、品類..." value={search} onChange={e=>setSearch(e.target.value)}/>
+          <button className={`i-fbtn ${sf==="all"?"on":""}`} onClick={()=>setSf("all")}>全部</button>
+          {ST.map(s=>{const n=base.filter(g=>g.stage===s).length;return n?<button key={s} className={`i-fbtn ${sf===s?"on":""}`} onClick={()=>setSf(sf===s?"all":s)}>{SM[s]}({n})</button>:null})}
+          {["critical","high"].map(t=>{const n=base.filter(g=>g.threat===t).length;return n?<button key={t} className="i-fbtn" style={tf===t?{background:TC[t],color:"#000",borderColor:TC[t]}:{}} onClick={()=>setTf(tf===t?"all":t)}>威脅{TM[t]}({n})</button>:null})}
+        </div>
+      </>}
+      {mod==="list"&&(()=>{
+        const tOrder={critical:0,high:1,medium:2,low:3};
+        const sorted=[...filtered].sort((a,b)=>tOrder[a.threat]-tOrder[b.threat]||(b.prereg||0)-(a.prereg||0));
+        const groups=[{key:"critical",label:"🚨 威脅極高",clr:"var(--red)"},{key:"high",label:"⚠️ 威脅高",clr:"var(--orange)"},{key:"medium",label:"● 威脅中",clr:"var(--yellow)"},{key:"low",label:"○ 威脅低",clr:"var(--green)"}];
+        return sorted.length?<div>{groups.map(gr=>{const items=sorted.filter(g=>g.threat===gr.key);if(!items.length)return null;
+          return<div key={gr.key} style={{marginBottom:20}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,padding:"6px 12px",borderRadius:8,background:`${gr.clr}0a`,borderLeft:`3px solid ${gr.clr}`}}>
+              <span style={{fontSize:13,fontWeight:700,color:gr.clr}}>{gr.label}</span>
+              <span style={{fontSize:11,color:"var(--muted)"}}>{items.length} 款</span>
+            </div>
+            <div className="i-grid">{items.map(g=><IntelGameCard key={g.id} g={g} onClick={setSel} ac={ac}/>)}</div>
+          </div>})}</div>:<div className="empty"><div className="ic">🔍</div><div>無符合條件的產品</div></div>;
+      })()}
+      {mod==="kanban"&&<div className="kanban">{ST.map(s=>{const gs=[...filtered.filter(g=>g.stage===s)].sort((a,b)=>{const o={critical:0,high:1,medium:2,low:3};return o[a.threat]-o[b.threat]||(b.prereg||0)-(a.prereg||0)});
+        return<div key={s} className="kcol">
+          <div className="kcol-h" style={{background:`${SC[s]||"#545d68"}12`,borderLeft:`3px solid ${SC[s]||"#545d68"}`}}><span style={{width:7,height:7,borderRadius:4,background:SC[s]||"#545d68"}}/><span style={{fontSize:11,fontWeight:700,color:SC[s]||"#545d68"}}>{SM[s]||s}</span><span style={{fontSize:10,color:"var(--muted)",marginLeft:"auto"}}>{gs.length}</span></div>
+          {gs.map(g=><IntelGameCard key={g.id} g={g} onClick={setSel} ac={ac}/>)}
+          {!gs.length&&<div style={{textAlign:"center",padding:16,fontSize:11,color:"var(--muted)"}}>無產品</div>}
+        </div>})}</div>}
+      {mod==="threat"&&<ThreatView games={base.filter(g=>g.category!=="tracking")} onSelect={setSel}/>}
+      {mod==="tracking"&&<TrackingView games={base}/>}
+      {mod==="gantt"&&<GanttView games={base.filter(g=>g.category!=="tracking")} onSelect={setSel}/>}
+      {mod==="qprod"&&<QProductsView games={base.filter(g=>g.category!=="tracking")} onSelect={setSel} ac={ac}/>}
+      {mod==="trend"&&<TrendView games={base}/>}
+      {mod==="launch"&&<LaunchView games={base.filter(g=>g.category!=="tracking")}/>}
+      {mod==="brief"&&<BriefView plat={plat} data={brief}/>}
+      {mod==="quarterly"&&<QuarterlyView plat={plat} data={qdata}/>}
+      {mod==="industry"&&<IndustryView/>}
+    </div>
+    {sel&&<IntelModal game={sel} onClose={()=>setSel(null)}/>}
+  </div>);}
+
+// ─────────────────────────────────────────
+// RANKING TAB
+// ─────────────────────────────────────────
+function RankingTab({intelProducts}){
+  const[daysData,setDaysData]=useState([]);
+  const[loading,setLoading]=useState(true);
+  const[dayIdx,setDayIdx]=useState(0);
+  const[region,setRegion]=useState("[TW] 台灣");
+  const[appModal,setAppModal]=useState(null);
+  const[intelModal,setIntelModal]=useState(null);
+  const[searchInput,setSearchInput]=useState("");
+  const[searchPlat,setSearchPlat]=useState("ios");
+
+  useEffect(()=>{
+    fetch(GAS_URL+'?action=data')
+      .then(r=>r.json())
+      .then(result=>{setDaysData(result.days||[]);setLoading(false);})
+      .catch(()=>setLoading(false));
+  },[]);
+
+  const day=daysData[dayIdx]||{today:"",allData:{},newsItems:[],analysis:{}};
+  const data=day.allData&&day.allData[region];
+  const analysis=day.analysis&&day.analysis[region];
+
+  function doSearch(){const q=searchInput.trim();if(!q)return;if(searchPlat==="ios")searchIos(q);else searchGP(q);}
+  function searchIos(q){
+    setAppModal({loading:true});
+    fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&country=TW&entity=software&genreId=6014&limit=1&lang=zh_tw`)
+      .then(r=>r.json()).then(d=>{if(d.results&&d.results.length)setAppModal({type:"ios",data:d.results[0]});else setAppModal({error:`找不到「${q}」`});})
+      .catch(()=>setAppModal({error:"搜尋失敗"}));
+  }
+  function searchGP(q){
+    setAppModal({loading:true});
+    fetch(`${GAS_URL}?action=searchGP&q=${encodeURIComponent(q)}`)
+      .then(r=>r.json()).then(d=>{if(d&&d.name)setAppModal({type:"gp",data:d});else setAppModal({error:`找不到「${q}」`});})
+      .catch(()=>setAppModal({error:"搜尋失敗"}));
+  }
+  function openApp(plat,appId,name){
+    const intel=findIntel(name,intelProducts);
+    if(plat==="ios"){
+      setAppModal({loading:true});
+      fetch(`https://itunes.apple.com/lookup?id=${appId}&country=TW&lang=zh_tw`)
+        .then(r=>r.json()).then(d=>{if(d.results&&d.results.length)setAppModal({type:"ios",data:d.results[0],intel});else window.open(`https://apps.apple.com/app/id${appId}`,'_blank');})
+        .catch(()=>window.open(`https://apps.apple.com/app/id${appId}`,'_blank'));
+    }else{
+      setAppModal({loading:true});
+      fetch(`${GAS_URL}?action=searchGP&q=${encodeURIComponent(name)}`)
+        .then(r=>r.json()).then(d=>{if(d&&d.name)setAppModal({type:"gp",data:d,intel});else window.open(`https://play.google.com/store/apps/details?id=${appId}`,'_blank');})
+        .catch(()=>window.open(`https://play.google.com/store/apps/details?id=${appId}`,'_blank'));
+    }
+  }
+
+  const medals=["🥇","🥈","🥉"];
+  function RankItem({g,rank,plat}){
+    const intel=findIntel(g.name,intelProducts);
+    return(<div className={`r-item${rank<=3?" top3":""}`} onClick={()=>openApp(plat,g.appId,g.name)}>
+      <div className={`r-rank ${rank===1?"r1":rank===2?"r2":rank===3?"r3":"ro"}`}>{rank<=3?medals[rank-1]:rank}</div>
+      <div className="r-name">{g.name}</div>
+      {intel&&<span className="intel-badge" onClick={e=>{e.stopPropagation();setIntelModal(intel);}}>⚠️ 競品</span>}
+    </div>);}
+
+  const charts=[
+    {key:"iosFree",label:"App Store 免費",cls:"ios",plat:"ios"},
+    {key:"iosGross",label:"App Store 收入",cls:"ios",plat:"ios"},
+    {key:"gpFree",label:"Google Play 免費",cls:"gp",plat:"gp"},
+    {key:"gpGross",label:"Google Play 收入",cls:"gp",plat:"gp"},
+  ];
+
+  if(loading)return<div className="loading"><div className="spinner"/><div>載入排行資料...</div></div>;
+
+  return(<>
+    <div className="r-controls">
+      <label style={{fontSize:12,color:"var(--muted)"}}>🌏</label>
+      <select className="r-select" value={region} onChange={e=>setRegion(e.target.value)}>
+        <optgroup label="── 主要地區 ──">
+          {["[TW] 台灣","[HK] 香港","[MO] 澳門","[JP] 日本","[KR] 韓國"].map(r=><option key={r} value={r}>{r}</option>)}
+        </optgroup>
+        <optgroup label="── 下午2點更新 ──">
+          {["[US] 美國","[SG] 新加坡","[MY] 馬來西亞"].map(r=><option key={r} value={r}>{r}</option>)}
+        </optgroup>
+      </select>
+      <label style={{fontSize:12,color:"var(--muted)"}}>📅</label>
+      <select className="r-select" value={dayIdx} onChange={e=>setDayIdx(+e.target.value)}>
+        {daysData.map((d,i)=>d&&<option key={i} value={i}>{i===0?"今日":i===1?"昨日":"前天"}（{d.today}）</option>)}
+      </select>
+      <select className="r-select" value={searchPlat} onChange={e=>setSearchPlat(e.target.value)}>
+        <option value="ios">📱 iOS</option>
+        <option value="gp">🤖 Android</option>
+      </select>
+      <input style={{padding:"7px 12px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text)",fontSize:12,fontFamily:"inherit",outline:"none",width:160}} placeholder="搜尋 App..." value={searchInput} onChange={e=>setSearchInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()}/>
+      <button onClick={doSearch} style={{padding:"7px 14px",borderRadius:8,background:"var(--cyan)",color:"#003d2b",border:"none",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"inherit"}}>搜尋</button>
+      <div className="r-date-tag">📅 {day.today||"載入中"}</div>
+    </div>
+    <div className="r-content">
+      {analysis&&analysis.length>0&&<div className="r-analysis">
+        <div className="r-analysis-title">📊 排名變動分析（今日 vs 昨日）</div>
+        {analysis.map((chart,ci)=>(<div key={ci}>
+          <div className="r-analysis-chart-label">{chart.chartLabel}</div>
+          {chart.findings.slice(0,25).map((f,fi)=>(
+            <div key={fi} className="r-analysis-item">
+              {f.type==="new"?<span className="r-badge-new">新進前10</span>:<span className="r-badge-rise">↑{f.rise}名</span>}
+              <div className="r-analysis-body">
+                <div>
+                  <span className="r-analysis-name" onClick={()=>{const intel=findIntel(f.name,intelProducts);if(intel)setIntelModal(intel);}}>{f.name}</span>
+                  <span className="r-analysis-rank">{f.oldRank?`(#${f.oldRank} → #${f.newRank})`:`(新上榜 → #${f.newRank})`}</span>
+                </div>
+                {f.aiReason&&<div className="r-analysis-ai">📌 {f.aiReason}</div>}
+                {f.hasNews&&f.newsLink&&<a href={f.newsLink} target="_blank" rel="noopener" className="r-analysis-link">{f.newsTitle||"相關新聞"} ↗</a>}
+                {!f.hasNews&&<span style={{fontSize:10,color:"var(--muted)"}}>暫無相關新聞</span>}
+              </div>
+            </div>
+          ))}
+        </div>))}
+      </div>}
+      <div className="r-grid">
+        {charts.map(c=>{
+          const games=data&&data[c.key]||[];
+          return(<div key={c.key} className="r-card">
+            <div className={`r-card-hdr ${c.cls}`}>{c.cls==="ios"?"📱":"🤖"} {c.label}</div>
+            {games.length===0?<div className="r-nodata">暫無資料</div>:games.map((g,i)=><RankItem key={i} g={g} rank={i+1} plat={c.plat}/>)}
+          </div>);})}
+      </div>
+      <div className="r-news">
+        <div className="r-news-hdr">📰 遊戲新聞</div>
+        {(day.newsItems||[]).length===0?<div style={{padding:16,textAlign:"center",color:"var(--muted)",fontSize:12}}>暫無新聞</div>:
+        (day.newsItems||[]).map((n,i)=>{const src=getSourceInfo(n.link,n.sourceName);
+          return(<div key={i} className="r-news-item">
+            {src.f?<img className="r-news-favicon" src={src.f} onError={e=>e.target.style.display="none"} alt=""/>:<div style={{width:18,height:18,background:"var(--card2)",borderRadius:4,flexShrink:0}}/>}
+            <div>
+              <a href={n.link} target="_blank" rel="noopener" className="r-news-title">{n.title}</a>
+              <div className="r-news-meta">{src.n}{src.n&&n.dateStr?" · ":""}{n.dateStr}</div>
+            </div>
+          </div>);})}
+      </div>
+    </div>
+    {appModal&&<div className="app-modal-bg" onClick={()=>setAppModal(null)}><div className="app-modal" onClick={e=>e.stopPropagation()}>
+      <button className="app-modal-x" onClick={()=>setAppModal(null)}>✕</button>
+      {appModal.loading&&<div className="modal-loading"><div className="spinner"/><div>載入中...</div></div>}
+      {appModal.error&&<div style={{padding:40,textAlign:"center",color:"var(--red)"}}>{appModal.error}</div>}
+      {appModal.intel&&!appModal.loading&&<div style={{background:"rgba(255,107,107,.08)",border:"1px solid rgba(255,107,107,.2)",borderRadius:8,padding:"8px 12px",marginBottom:12,display:"flex",alignItems:"center",gap:8}}>
+        <span style={{fontSize:12,color:"var(--red)",fontWeight:700}}>⚠️ 競品追蹤中</span>
+        <button onClick={()=>{setAppModal(null);setIntelModal(appModal.intel);}} style={{fontSize:11,color:"var(--cyan)",background:"none",border:"1px solid rgba(0,212,255,.3)",borderRadius:5,padding:"2px 8px",cursor:"pointer",fontFamily:"inherit"}}>查看情報 →</button>
+      </div>}
+      {appModal.type==="ios"&&!appModal.loading&&appModal.data&&<IosAppDetail data={appModal.data}/>}
+      {appModal.type==="gp"&&!appModal.loading&&appModal.data&&<GpAppDetail data={appModal.data}/>}
+    </div></div>}
+    {intelModal&&<IntelModal game={intelModal} onClose={()=>setIntelModal(null)}/>}
+  </>);}
+
+function IosAppDetail({data:app}){
+  const[collapsed,setCollapsed]=useState(true);
+  const rating=app.averageUserRating?app.averageUserRating.toFixed(1):"N/A";
+  const stars=Array.from({length:5},(_,i)=>i<Math.round(app.averageUserRating||0)?"★":"☆").join("");
+  const size=app.fileSizeBytes?`${(app.fileSizeBytes/1048576).toFixed(0)} MB`:"N/A";
+  const storeUrl=app.trackViewUrl||`https://apps.apple.com/app/id${app.trackId}`;
+  return(<>
+    <div style={{display:"flex",gap:14,alignItems:"flex-start",marginBottom:14}}>
+      {app.artworkUrl512&&<img className="app-icon-img" src={app.artworkUrl512} alt=""/>}
+      <div style={{flex:1}}>
+        <h2 style={{fontSize:18,fontWeight:800,marginBottom:3}}>{app.trackName}</h2>
+        <div style={{fontSize:12,color:"var(--cyan)",marginBottom:6}}>{app.artistName}</div>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <span style={{color:"#ffd700",fontSize:14}}>{stars}</span>
+          <span style={{fontSize:12,color:"var(--muted)"}}>{rating} ({(app.userRatingCount||0).toLocaleString()}則)</span>
+        </div>
+      </div>
+    </div>
+    <div className="info-grid">
+      <div className="info-cell"><div className="lbl">年齡分級</div><div className="val">{app.contentAdvisoryRating||"N/A"}</div></div>
+      <div className="info-cell"><div className="lbl">大小</div><div className="val">{size}</div></div>
+      <div className="info-cell"><div className="lbl">類別</div><div className="val">{app.genres&&app.genres[0]||"N/A"}</div></div>
+    </div>
+    {app.screenshotUrls&&app.screenshotUrls.length>0&&<div className="screenshots-row">{app.screenshotUrls.slice(0,4).map((s,i)=><img key={i} src={s} alt="" style={{height:150,borderRadius:8,flexShrink:0}}/>)}</div>}
+    <div className={`app-desc ${collapsed?"col":""}`} dangerouslySetInnerHTML={{__html:(app.description||"").replace(/\n/g,"<br/>")}}/>
+    <button className="show-more-btn" onClick={()=>setCollapsed(!collapsed)}>{collapsed?"顯示更多 ▼":"收起 ▲"}</button>
+    <a href={storeUrl} target="_blank" rel="noopener" className="open-store-btn">📱 在 App Store 開啟</a>
+  </>);}
+
+function GpAppDetail({data:app}){
+  const[collapsed,setCollapsed]=useState(true);
+  const stars=Array.from({length:5},(_,i)=>i<Math.round(parseFloat(app.rating)||0)?"★":"☆").join("");
+  return(<>
+    <div style={{display:"flex",gap:14,alignItems:"flex-start",marginBottom:14}}>
+      {app.icon&&<img className="app-icon-img" src={`${app.icon}=w80-h80`} alt=""/>}
+      <div style={{flex:1}}>
+        <h2 style={{fontSize:18,fontWeight:800,marginBottom:3}}>{app.name}</h2>
+        <div style={{fontSize:12,color:"var(--cyan)",marginBottom:6}}>{app.developer}</div>
+        <div style={{display:"flex",alignItems:"center",gap:8}}>
+          <span style={{color:"#ffd700",fontSize:14}}>{stars}</span>
+          <span style={{fontSize:12,color:"var(--muted)"}}>{app.rating} ({app.reviews}則)</span>
+        </div>
+      </div>
+    </div>
+    {app.screenshots&&app.screenshots.length>0&&<div className="screenshots-row">{app.screenshots.map((s,i)=><img key={i} src={`${s}=w200`} alt="" style={{height:150,borderRadius:8,flexShrink:0}}/>)}</div>}
+    <div className={`app-desc ${collapsed?"col":""}`} dangerouslySetInnerHTML={{__html:(app.description||"").replace(/\n/g,"<br/>")}}/>
+    <button className="show-more-btn" onClick={()=>setCollapsed(!collapsed)}>{collapsed?"顯示更多 ▼":"收起 ▲"}</button>
+    <a href={app.storeUrl} target="_blank" rel="noopener" className="open-store-btn">🤖 在 Google Play 開啟</a>
+  </>);}
+
+// ─────────────────────────────────────────
+// MAIN APP
+// ─────────────────────────────────────────
+function App(){
+  const[mainTab,setMainTab]=useState("ranking");
+  const[intelProducts,setIntelProducts]=useState([]);
+  useEffect(()=>{
+    fetch(`${INTEL_BASE}/products.json`).then(r=>r.json()).then(setIntelProducts).catch(()=>{});
+  },[]);
+  return(<div className="app">
+    <div className="hdr"><div className="hdr-in">
+      <div className="logo">
+        <div className="logo-ic">🎮</div>
+        <div><h1>手遊情報中心</h1><small>排行榜 · 市場情報 · AI 分析</small></div>
+      </div>
+      <div className="main-tabs">
+        <button className={`main-tab ${mainTab==="ranking"?"on":""}`} onClick={()=>setMainTab("ranking")}>🎮 排行榜</button>
+        <button className={`main-tab ${mainTab==="intel"?"on":""}`} onClick={()=>setMainTab("intel")}>📊 市場情報</button>
+      </div>
+      <div style={{fontSize:11,color:"var(--muted)",display:"flex",alignItems:"center",gap:6}}>
+        <span className="dot"/>{intelProducts.length>0?`追蹤 ${intelProducts.length} 款競品`:""}
+      </div>
+    </div></div>
+    {mainTab==="ranking"&&<RankingTab intelProducts={intelProducts}/>}
+    {mainTab==="intel"&&<IntelTab/>}
+    <div style={{textAlign:"center",padding:"16px 24px 32px",fontSize:10,color:"var(--muted)"}}>
+      手遊情報中心 · 排行榜資料每日自動更新 · 情報資料來自公開可查證來源
+    </div>
+  </div>);}
+
+ReactDOM.render(<App/>,document.getElementById('app'));
+</script>
+</body>
+</html>
