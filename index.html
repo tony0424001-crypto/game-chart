@@ -461,21 +461,60 @@ function TrendView({games}){
 function LaunchView({games}){
   const months=["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
   const counts=months.map(()=>({total:0,names:[]}));
-  games.forEach(g=>{const d=parseD(g.launchEst);if(d&&d.y===2026){const i=d.m-1;counts[i].total++;counts[i].names.push(g.name);}});
+  const now=new Date();
+  const curYear=now.getFullYear();
+  const curM=now.getMonth();
+  const BAR_MAX_H=100;
+
+  games.forEach(g=>{
+    const d=parseD(g.launchEst);
+    if(d&&d.y>=curYear-1&&d.y<=curYear+1){
+      const i=d.m-1;
+      counts[i].total++;
+      counts[i].names.push(g.name);
+    }
+  });
+
   const max=Math.max(...counts.map(c=>c.total),1);
-  const curM=new Date().getMonth();
+
   return(<div>
-    <div style={{background:"var(--surface)",borderRadius:10,padding:16,border:"1px solid var(--border)",marginBottom:16}}>
-      <div className="ld-bar-wrap">
-        {counts.map((c,i)=>{const h=max>0?(c.total/max)*100:0;const clr=c.total>4?"var(--red)":c.total>2?"var(--orange)":c.total>0?"var(--cyan)":"var(--border)";
-        return<div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center"}}>
-          <div className="ld-bar" style={{width:"100%",height:`${Math.max(h,4)}%`,background:clr,border:i===curM?"2px solid var(--cyan)":"none"}} title={c.names.join("、")}/>
-          <div className="ld-label" style={{color:i===curM?"var(--cyan)":"var(--muted)"}}>{months[i]}</div>
-          <div style={{fontSize:10,fontWeight:700,color:c.total>0?"var(--text)":"var(--muted)"}}>{c.total||""}</div>
-        </div>})}
+    <div style={{fontSize:12,color:"var(--dim)",marginBottom:14,padding:"8px 12px",borderRadius:8,background:"var(--surface)",border:"1px solid var(--border)"}}>
+      🚀 <strong>上線時機分析</strong> — 各月競品密度，越高代表同期競爭越激烈</div>
+    <div style={{background:"var(--surface)",borderRadius:10,padding:"16px 16px 8px",border:"1px solid var(--border)",marginBottom:16}}>
+      <div style={{display:"flex",alignItems:"flex-end",gap:2,height:BAR_MAX_H+"px",marginBottom:4}}>
+        {counts.map((c,i)=>{
+          const h=max>0?Math.max(Math.round((c.total/max)*BAR_MAX_H),c.total>0?4:0):0;
+          const clr=c.total>4?"var(--red)":c.total>2?"var(--orange)":c.total>0?"var(--cyan)":"transparent";
+          return<div key={i} style={{flex:1,height:h+"px",background:clr,borderRadius:"3px 3px 0 0",minWidth:16,cursor:c.total>0?"pointer":"default",border:i===curM?"2px solid var(--cyan)":"none",boxSizing:"border-box",transition:"height .3s"}} title={c.names.join("、")}/>;
+        })}
+      </div>
+      <div style={{display:"flex",gap:2,borderTop:"1px solid var(--border2)",paddingTop:4}}>
+        {counts.map((c,i)=>(
+          <div key={i} style={{flex:1,textAlign:"center"}}>
+            <div style={{fontSize:9,color:i===curM?"var(--cyan)":"var(--muted)",fontWeight:i===curM?700:400}}>{months[i]}</div>
+            <div style={{fontSize:10,fontWeight:700,color:c.total>0?"var(--text)":"transparent",minHeight:14}}>{c.total||""}</div>
+          </div>
+        ))}
       </div>
     </div>
-  </div>);}
+    <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>各月上線產品明細</div>
+    <div style={{display:"flex",gap:0,overflowX:"auto"}}>
+      {months.map((mo,i)=>{
+        const items=[];
+        games.forEach(g=>{
+          const d=parseD(g.launchEst);
+          if(d&&d.y>=curYear-1&&d.y<=curYear+1&&d.m===i+1) items.push(g);
+        });
+        return<div key={i} style={{flex:1,minWidth:80,borderRight:"1px solid var(--border)",padding:"0 4px"}}>
+          <div style={{textAlign:"center",padding:"4px 0",fontSize:11,fontWeight:800,color:items.length>3?"var(--red)":"var(--dim)",borderRadius:6,marginBottom:6,background:i===curM?"rgba(0,212,255,.08)":"transparent"}}>{mo}</div>
+          {items.map(g=><div key={g.id} style={{padding:"3px 5px",marginBottom:2,borderRadius:4,background:`${TC[g.threat]}12`,borderLeft:`2px solid ${TC[g.threat]}`,fontSize:9,lineHeight:1.3}}>
+            <div style={{fontWeight:700,color:"var(--text)"}}>{g.name}</div>
+          </div>)}
+        </div>;
+      })}
+    </div>
+  </div>);
+}
 
 function IndustryView(){
   const[data]=useJson(`${INTEL_BASE}/industry-trends.json`,null);
