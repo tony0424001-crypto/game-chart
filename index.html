@@ -185,6 +185,16 @@ const TC={critical:"#ff6b6b",high:"#ffaa33",medium:"#ffe066",low:"#2dd4a8"};
 const ST=["announced","pre-reg","cbt","soft-launch","live-ops"];
 const PM={urgent:{c:"bu",l:"🚨 需立即行動",k:"var(--red)"},watch:{c:"bw",l:"👁 值得關注",k:"var(--orange)"},info:{c:"bi",l:"ℹ️ 背景資訊",k:"var(--muted)"}};
 const MZH=["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"];
+function regionScore(region){
+  const r=(region||"").toUpperCase();
+  if(!r||r.includes("待確認")||r.includes("未知"))return 2.5;
+  if(r.includes("TW")||r.includes("HK")||r.includes("MO"))return 0;
+  if(r.includes("SG")||r.includes("MY"))return 0.5;
+  if(r.includes("CN")||r.includes("JP")||r.includes("KR"))return 1;
+  if(r.includes("GLOBAL"))return 1.5;
+  if(r.includes("US")||r.includes("EU")||r.includes("EUROPE")||r.includes("NA"))return 3;
+  return 2;
+}
 const FLAG={"CN":"🇨🇳","TW/HK/MO":"🇹🇼","JP":"🇯🇵","KR":"🇰🇷","Global":"🌏","TW":"🇹🇼"};
 
 function useJson(url,fb){
@@ -658,7 +668,11 @@ function IntelTab(){
         </div>
         <div className="i-search">
           <input className="i-sinput" placeholder="🔍 搜尋遊戲名稱、開發商、品類..." value={search} onChange={e=>setSearch(e.target.value)}/>
-          {mod==="list"&&<button className={`i-fbtn ${sortMode==="time"?"on":""}`} onClick={()=>setSortMode(sortMode==="time"?"threat":"time")}>{sortMode==="time"?"🕐 依加入時間":"⚠️ 依威脅排序"}</button>}
+          {mod==="list"&&<select value={sortMode} onChange={e=>setSortMode(e.target.value)} className="i-fbtn" style={{cursor:"pointer"}}>
+            <option value="threat">⚠️ 依威脅排序</option>
+            <option value="time">🕐 依加入時間</option>
+            <option value="region">🌏 依地區相關性</option>
+          </select>}
           <button className={`i-fbtn ${sf==="all"?"on":""}`} onClick={()=>setSf("all")}>全部</button>
           {ST.map(s=>{const n=base.filter(g=>g.stage===s).length;return n?<button key={s} className={`i-fbtn ${sf===s?"on":""}`} onClick={()=>setSf(sf===s?"all":s)}>{SM[s]}({n})</button>:null})}
           {["critical","high"].map(t=>{const n=base.filter(g=>g.threat===t).length;return n?<button key={t} className="i-fbtn" style={tf===t?{background:TC[t],color:"#000",borderColor:TC[t]}:{}} onClick={()=>setTf(tf===t?"all":t)}>威脅{TM[t]}({n})</button>:null})}
@@ -668,10 +682,12 @@ function IntelTab(){
         const tOrder={critical:0,high:1,medium:2,low:3};
         const sorted=sortMode==="time"
           ?[...filtered].sort((a,b)=>(b.addedAt||"0000-00-00").localeCompare(a.addedAt||"0000-00-00"))
+          :sortMode==="region"
+          ?[...filtered].sort((a,b)=>regionScore(a.region)-regionScore(b.region)||tOrder[a.threat]-tOrder[b.threat])
           :[...filtered].sort((a,b)=>tOrder[a.threat]-tOrder[b.threat]||(b.prereg||0)-(a.prereg||0));
         const groups=[{key:"critical",label:"🚨 威脅極高",clr:"var(--red)"},{key:"high",label:"⚠️ 威脅高",clr:"var(--orange)"},{key:"medium",label:"● 威脅中",clr:"var(--yellow)"},{key:"low",label:"○ 威脅低",clr:"var(--green)"}];
         return<div>
-          {sortMode==="time"
+          {(sortMode==="time"||sortMode==="region")
             ?(sorted.length?<div className="i-grid">{sorted.map(g=><IntelGameCard key={g.id} g={g} onClick={setSel} ac={ac} onOverride={onOverride}/>)}</div>:<div className="empty"><div className="ic">🔍</div><div>無符合條件的產品</div></div>)
             :(sorted.length?groups.map(gr=>{const items=sorted.filter(g=>g.threat===gr.key);if(!items.length)return null;
               return<div key={gr.key} style={{marginBottom:20}}>
